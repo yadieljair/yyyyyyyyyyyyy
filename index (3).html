@@ -1,0 +1,1180 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>ProStats IA</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{background:#0d1117;color:#e6edf3;font-family:-apple-system,system-ui,sans-serif;min-height:100vh}
+.hdr{background:#161b22;border-bottom:1px solid #30363d;padding:50px 16px 12px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10}
+.hdr h1{font-size:16px;font-weight:700}.hdr p{font-size:10px;color:#8b949e;margin-top:2px}
+.bdg{background:#0d2010;border:1px solid #238636;border-radius:6px;padding:3px 8px;font-size:10px;font-weight:600;color:#3fb950}
+.tabs{display:flex;background:#161b22;border-bottom:1px solid #30363d;overflow-x:auto;-webkit-overflow-scrolling:touch;position:sticky;top:70px;z-index:10;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{flex-shrink:0;padding:10px 14px;background:none;border:none;color:#8b949e;font-size:12px;font-weight:600;border-bottom:2px solid transparent;cursor:pointer;white-space:nowrap}
+.tab.on{color:#3fb950;border-bottom-color:#3fb950}
+.pg{padding:14px;display:flex;flex-direction:column;gap:12px;padding-bottom:60px}
+.card{background:#161b22;border:1px solid #30363d;border-radius:12px;overflow:hidden}
+.card-h{background:#21262d;padding:12px 14px;border-bottom:1px solid #30363d}
+.card-h h2{font-size:14px;font-weight:600}.card-h p{font-size:11px;color:#8b949e;margin-top:2px}
+.card-b{padding:14px;display:flex;flex-direction:column;gap:10px}
+.lbl{font-size:11px;color:#8b949e;font-weight:500;margin-bottom:3px}
+.inp{width:100%;padding:12px;background:#21262d;border:1px solid #30363d;border-radius:8px;color:#e6edf3;font-size:14px;outline:none;-webkit-appearance:none;display:block}
+.inp:focus{border-color:#388bfd}.inp::placeholder{color:#484f58}
+.sel{width:100%;padding:12px;background:#21262d;border:1px solid #30363d;border-radius:8px;color:#e6edf3;font-size:14px;outline:none;-webkit-appearance:none;display:block}
+.btn{display:block;width:100%;padding:14px;border:none;border-radius:8px;font-size:15px;font-weight:600;cursor:pointer;text-align:center}
+.btn-g{background:#238636;color:#fff}.btn-g:disabled{opacity:.5}
+.btn-d{background:#21262d;color:#c9d1d9;border:1px solid #30363d}
+.game-list{background:#161b22;border:1px solid #30363d;border-radius:12px;overflow:hidden}
+.glh{background:#21262d;padding:10px 14px;border-bottom:1px solid #30363d;display:flex;align-items:center;justify-content:space-between}
+.glh h3{font-size:13px;font-weight:600}
+.gi{display:flex;align-items:center;padding:11px 14px;border-bottom:1px solid #21262d;cursor:pointer;gap:8px}
+.gi:last-child{border-bottom:none}.gi:active{background:#21262d}
+.git{flex:1}.gih{font-size:13px;font-weight:600;margin-bottom:3px}.gia{font-size:12px;color:#8b949e}
+.gir{display:flex;flex-direction:column;align-items:flex-end;gap:3px;min-width:72px}
+.gis{font-size:14px;font-weight:800}
+.tag{font-size:9px;font-weight:700;padding:2px 6px;border-radius:6px}
+.tl{background:rgba(248,81,73,.2);color:#f85149}.tf{background:rgba(139,148,158,.15);color:#8b949e}.ts{background:rgba(35,134,54,.15);color:#3fb950}
+.hint{font-size:9px;color:#e3b341;font-weight:600}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.sg{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.sb{background:#21262d;border-radius:8px;padding:10px}
+.sb h4{font-size:10px;font-weight:600;color:#c9d1d9;margin-bottom:7px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sr{display:flex;justify-content:space-between;margin-bottom:4px}
+.sl{font-size:10px;color:#8b949e}.sv{font-size:11px;font-weight:700}
+.g{color:#3fb950}.a{color:#e3b341}.r{color:#f85149}.b{color:#388bfd}
+.warn{background:rgba(227,179,65,.08);border:1px solid rgba(227,179,65,.3);border-radius:8px;padding:9px 12px;font-size:11px;color:#e3b341;line-height:1.5}
+.inj{background:rgba(248,81,73,.08);border:1px solid rgba(248,81,73,.3);border-radius:8px;padding:10px 12px}
+.inj-t{font-size:10px;font-weight:700;color:#ffa198;text-transform:uppercase;margin-bottom:4px}
+.inj-r{font-size:12px;color:#ffa198;margin-bottom:2px}
+.atx{font-size:13px;color:#8b949e;line-height:1.65;background:#21262d;border-radius:8px;padding:11px 12px}
+.bpk{border-radius:10px;padding:13px 14px;border:2px solid}
+.plbl{font-size:10px;font-weight:600;color:#8b949e;text-transform:uppercase;letter-spacing:.5px;padding:3px 0}
+.pc{background:#21262d;border:1px solid #30363d;border-radius:8px;padding:10px 12px}
+.pc.hi{border-color:#238636;background:rgba(13,32,16,.5)}.pc.mi{border-color:#9e6a03}
+.pt{display:flex;justify-content:space-between;align-items:center;margin-bottom:3px}
+.pm{font-size:10px;font-weight:600;color:#8b949e;text-transform:uppercase}
+.pp{font-size:13px;font-weight:700}.pv{font-size:13px;font-weight:600;color:#e6edf3;margin-bottom:3px}
+.pw{font-size:12px;color:#8b949e;line-height:1.4}
+.pb{height:3px;background:#30363d;border-radius:2px;margin-top:5px}
+.pf{height:100%;border-radius:2px}
+.pby{background:linear-gradient(135deg,#0d2010,#111a0f);border:2px solid #238636;border-radius:12px;padding:15px}
+.prows{background:rgba(13,32,16,.5);border-radius:8px;padding:8px 12px}
+.pr{padding:9px 0;border-bottom:1px solid #1e3020}.pr:last-child{border-bottom:none}
+.pr-t{display:flex;justify-content:space-between;align-items:center}
+.pr-m{font-size:10px;color:#8b949e;font-weight:600;text-transform:uppercase}
+.pr-p{font-size:13px;font-weight:700;color:#3fb950}
+.pr-v{font-size:13px;font-weight:600;color:#e6edf3;margin-top:2px}
+.pr-w{font-size:11px;color:#56d364;margin-top:2px;line-height:1.4}
+.pgn{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-top:12px}
+.p2{background:#0d2010;border:1px solid #1e3020;border-radius:8px;padding:8px;text-align:center}
+.p2l{font-size:9px;color:#56d364;margin-bottom:2px}.p2a{font-size:15px;font-weight:700;color:#3fb950}
+.nop{background:rgba(13,32,16,.2);border:1px solid #1e3020;border-radius:8px;padding:14px;text-align:center;color:#8b949e;font-size:13px;line-height:1.5}
+.mpr{background:linear-gradient(135deg,#0d2010,#111a0f);border:2px solid #238636;border-radius:14px;padding:16px}
+.mpk{background:rgba(13,32,16,.5);border:1px solid #1e3020;border-radius:10px;padding:12px;margin-bottom:8px}
+.mpksp{display:flex;align-items:center;gap:6px;margin-bottom:5px}
+.mpknm{font-size:10px;font-weight:700;text-transform:uppercase}
+.mpkma{font-size:11px;color:#8b949e;margin-left:auto;text-align:right;line-height:1.3;max-width:150px}
+.mpkt{display:flex;justify-content:space-between;align-items:center}
+.mpkmk{font-size:11px;font-weight:600;color:#8b949e}
+.mpkpc{font-size:15px;font-weight:700}
+.mpkv{font-size:14px;font-weight:600;color:#e6edf3;margin-top:3px}
+.mpkw{font-size:12px;color:#56d364;margin-top:3px;line-height:1.4}
+.mgn{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin-top:12px}
+.mg{background:#0d2010;border:1px solid #1e3020;border-radius:8px;padding:8px;text-align:center}
+.mgl{font-size:9px;color:#56d364;margin-bottom:2px}.mga{font-size:14px;font-weight:700;color:#3fb950}
+.ld{display:flex;flex-direction:column;align-items:center;padding:40px 20px;gap:12px;text-align:center;color:#8b949e;line-height:1.6}
+.sp{width:28px;height:28px;border:3px solid #30363d;border-top-color:#238636;border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.err{padding:12px;background:rgba(248,81,73,.08);border:1px solid rgba(248,81,73,.3);border-radius:8px;color:#ffa198;font-size:13px;line-height:1.6}
+.cfg-info{font-size:11px;color:#8b949e;line-height:1.7;background:#21262d;border-radius:8px;padding:12px}
+.disc{text-align:center;font-size:11px;color:#484f58;padding:4px}
+.sbdg{display:inline-flex;align-items:center;gap:4px;background:#0d2010;border:1px solid #1e3020;border-radius:6px;padding:3px 8px;font-size:10px;color:#3fb950;font-weight:600}
+.tags{display:flex;flex-wrap:wrap;gap:5px}
+.tg{padding:3px 8px;border-radius:5px;font-size:10px;font-weight:600;background:#21262d;color:#8b949e}
+/* Tracker & Home */
+.srow{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid #21262d}
+.srow:last-child{border-bottom:none}
+.sl2{font-size:12px;color:#8b949e}.sv2{font-size:13px;font-weight:700}
+.bbar{height:7px;background:#21262d;border-radius:4px;overflow:hidden;margin:4px 0}
+.bfill{height:100%;border-radius:4px}
+.hi2{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid #21262d}
+.hi2:last-child{border-bottom:none}
+.hico{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
+.hw{background:rgba(35,134,54,.2)}.hl{background:rgba(248,81,73,.2)}.hp{background:rgba(139,148,158,.15)}
+.hinf{flex:1;min-width:0}
+.hmt{font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hpk{font-size:11px;color:#8b949e;margin-top:1px}
+.hdt{font-size:10px;color:#484f58;margin-top:1px}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{padding:5px 12px;background:#21262d;border:1px solid #30363d;border-radius:20px;font-size:11px;color:#8b949e;cursor:pointer}
+.chip:active{background:#238636;color:#fff;border-color:#238636}
+.srwrap{position:relative}
+.srico{position:absolute;left:12px;top:50%;transform:translateY(-50%)}
+.srinp{padding-left:38px!important}
+.spg{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.spb{background:#21262d;border:2px solid #30363d;border-radius:10px;padding:14px 8px;cursor:pointer;text-align:center;width:100%}
+.spb .ico{font-size:26px;display:block;margin-bottom:4px}.spb .nm{font-size:13px;font-weight:700;color:#8b949e;display:block}
+.spb.on{background:rgba(35,134,54,.15);border-color:#238636}.spb.on .nm{color:#3fb950}
+.cnb{background:#21262d;border:2px solid #30363d;border-radius:10px;padding:12px 4px;cursor:pointer;text-align:center;width:100%}
+.cnb .cn{font-size:20px;font-weight:800;color:#8b949e;display:block}.cnb .cl{font-size:10px;color:#8b949e;display:block;margin-top:2px}
+.cnb.on{background:rgba(35,134,54,.15);border-color:#238636}.cnb.on .cn,.cnb.on .cl{color:#3fb950}
+</style>
+</head>
+<body>
+<div class="hdr">
+  <div><h1>🏆 ProStats IA</h1><p>NBA · Tennis · Fútbol · Béisbol · Parlay</p></div>
+  <span class="bdg" id="bdg">v2</span>
+</div>
+<div class="tabs">
+  <button class="tab on" onclick="go('hm',this)">🏠 Inicio</button>
+  <button class="tab" onclick="go('nba',this)">🏀 NBA</button>
+  <button class="tab" onclick="go('ten',this)">🎾 Tennis</button>
+  <button class="tab" onclick="go('fut',this)">⚽ Fútbol</button>
+  <button class="tab" onclick="go('mlb',this)">⚾ Béisbol</button>
+  <button class="tab" onclick="go('par',this)">🎰 Parlay</button>
+  <button class="tab" onclick="go('trk',this)">📊 Tracker</button>
+  <button class="tab" onclick="go('cfg',this)">⚙️ Config</button>
+</div>
+<div class="pg" id="pg"></div>
+<script>
+var GURL='https://api.groq.com/openai/v1/chat/completions';
+var PS=new Set(['nba','mlb']);
+var PN=4;
+
+function GK(){try{var k=localStorage.getItem('gk');return(k&&k.length>10)?k:'';}catch(e){return '';}}
+function ubdg(){var b=document.getElementById('bdg');if(GK()){b.textContent='KEY✓';b.style.color='#e3b341';}}
+function savePick(p){try{var a=getPicks();a.unshift(p);if(a.length>100)a=a.slice(0,100);localStorage.setItem('picks',JSON.stringify(a));}catch(e){}}
+function getPicks(){try{return JSON.parse(localStorage.getItem('picks')||'[]');}catch(e){return[];}}
+function markResult(id,r){try{var a=getPicks();var p=a.find(function(x){return x.id===id;});if(p)p.result=r;localStorage.setItem('picks',JSON.stringify(a));}catch(e){}}
+function clearPicks(){if(confirm('Limpiar historial?')){localStorage.removeItem('picks');pgTRK(document.getElementById('pg'));}}
+function getBK(){try{return JSON.parse(localStorage.getItem('bk')||'{"s":100,"c":100}');}catch(e){return{s:100,c:100};}}
+function saveBK2(s,c){try{localStorage.setItem('bk',JSON.stringify({s:s,c:c}));}catch(e){}}
+
+window.addEventListener('load',function(){ubdg();fixKB();go('hm',document.querySelector('.tab.on'));});
+
+function fixKB(){
+  if(!window.visualViewport)return;
+  window.visualViewport.addEventListener('resize',function(){
+    var pg=document.getElementById('pg');if(!pg)return;
+    var kb=window.innerHeight-window.visualViewport.height;
+    pg.style.paddingBottom=(kb>80?kb+60:60)+'px';
+  });
+  document.addEventListener('focusin',function(e){
+    if(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA')
+      setTimeout(function(){e.target.scrollIntoView({behavior:'smooth',block:'center'});},400);
+  });
+}
+
+function go(s,btn){
+  document.querySelectorAll('.tab').forEach(function(b){b.classList.remove('on');});
+  if(btn)btn.classList.add('on');
+  var pg=document.getElementById('pg');pg.innerHTML='';
+  var fns={hm:pgHM,nba:pgNBA,ten:pgTEN,fut:pgFUT,mlb:pgMLB,par:pgPAR,trk:pgTRK,cfg:pgCFG};
+  if(fns[s])fns[s](pg);
+}
+
+function G(id){return document.getElementById(id);}
+function V(id){var e=G(id);return e?e.value.trim():'';}
+function H(id,h){var e=G(id);if(e)e.innerHTML=h;}
+function dis(id,b){var e=G(id);if(e)e.disabled=b;}
+function DS(){return new Date().toLocaleDateString('es-CO',{weekday:'long',day:'numeric',month:'long',year:'numeric'});}
+function LW(s){return(s||'').split(' ').slice(-1)[0];}
+function LD(id,msg){H(id,'<div class="ld"><div class="sp"></div><span>'+msg+'</span></div>');}
+function ER(id,msg){H(id,'<div class="err">⚠️ '+msg+'<br><br>• Intenta de nuevo<br>• Ve a Config y verifica tu key</div>');}
+function SR(l,v,c){if(v===undefined||v===null||v==='')return '';return '<div class="sr"><span class="sl">'+l+'</span><span class="sv '+(c||'')+'">'+v+'</span></div>';}
+function PK(icon,lbl,d){
+  if(!d)return '';
+  var c=d.conf||0;
+  var clr=c>=85?'#3fb950':c>=80?'#56d364':c>=70?'#e3b341':'#8b949e';
+  var cc=c>=82?'hi':c>=70?'mi':'';
+  return '<div class="pc '+cc+'"><div class="pt"><span class="pm">'+icon+' '+lbl+'</span><span class="pp" style="color:'+clr+'">'+c+'%</span></div>'
+    +'<div class="pv">'+(d.pick||'')+'</div><div class="pw">'+(d.why||d.razon||'')+'</div>'
+    +'<div class="pb"><div class="pf" style="width:'+Math.min(c,100)+'%;background:'+clr+'"></div></div></div>';
+}
+function BP(d){
+  var all=[d.ganador,d.total,d.ct,d.btts_pk,d.dop,d.hsets,d.carrera_t].filter(Boolean);
+  var best={conf:0};all.forEach(function(x){if((x.conf||0)>(best.conf||0))best=x;});
+  var bc=best.conf||0;if(bc<78)return '';
+  var clr=bc>=87?'#3fb950':bc>=82?'#56d364':'#e3b341';
+  return '<div class="bpk" style="background:'+clr+'10;border-color:'+clr+'44"><div class="bpk-l" style="color:'+clr+'">⭐ Mejor pick</div>'
+    +'<div style="font-size:14px;font-weight:600;color:#e6edf3;margin-top:3px">'+(d.mejor||best.pick||'')+'</div>'
+    +'<div style="font-size:26px;font-weight:700;color:'+clr+';margin-top:4px">'+bc+'%</div></div>';
+}
+function PBX(picks){
+  var pp=(picks||[]).filter(function(p){return p&&(p.conf||0)>=80;}).slice(0,3);
+  if(!pp.length)return '<div class="nop">Sin picks ≥80%.</div>';
+  var cuota=pp.reduce(function(a,p){return a*(1/((p.conf||82)/100));},1).toFixed(2);
+  var avg=(pp.reduce(function(a,p){return a+(p.conf||82);},0)/pp.length).toFixed(0);
+  var rows=pp.map(function(p){return '<div class="pr"><div class="pr-t"><span class="pr-m">'+(p.mercado||'')+'</span><span class="pr-p">'+(p.conf||82)+'%</span></div><div class="pr-v">'+(p.pick||'')+'</div><div class="pr-w">'+(p.razon||p.why||'')+'</div></div>';}).join('');
+  var g=[10,25,50,100].map(function(x){return '<div class="p2"><div class="p2l">$'+x+'</div><div class="p2a">$'+(x*parseFloat(cuota)).toFixed(0)+'</div></div>';}).join('');
+  return '<div class="pby"><div class="pby-t">PARLAY '+pp.length+' PICKS · ~'+avg+'%</div><div class="pby-s">Cuota ~'+cuota+'x</div><div class="prows">'+rows+'</div><div class="pgn">'+g+'</div><div style="font-size:10px;color:#1a7f37;text-align:center;margin-top:8px">Juega responsablemente</div></div>';
+}
+var WARN='<div class="warn">⚠️ Verifica en <b>thestatsdontlie.com</b> y <b>SofaScore</b> antes de apostar.</div>';
+
+// ESPN
+async function espnFetch(url){
+  try{var ctrl=new AbortController();setTimeout(function(){ctrl.abort();},7000);var r=await fetch(url,{signal:ctrl.signal});if(!r.ok)return null;return await r.json();}catch(e){return null;}
+}
+async function getNBAGames(){
+  var d=await espnFetch('https://site.api.espn.com/apis/site/v2/sports/basketball/nba/scoreboard');
+  if(!d||!d.events||!d.events.length)return [];
+  return d.events.map(function(e){
+    var comp=e.competitions&&e.competitions[0];var teams=comp&&comp.competitors||[];
+    var home=teams.find(function(t){return t.homeAway==='home';});
+    var away=teams.find(function(t){return t.homeAway==='away';});
+    if(!home||!away)return null;
+    var st=e.status&&e.status.type;
+    return{home:home.team.displayName,away:away.team.displayName,hs:home.score||'',as:away.score||'',
+      live:st&&st.name==='STATUS_IN_PROGRESS',final:st&&st.name==='STATUS_FINAL',
+      time:comp.date?new Date(comp.date).toLocaleTimeString('es-CO',{hour:'2-digit',minute:'2-digit',hour12:true,timeZone:'America/Bogota'}):''};
+  }).filter(Boolean);
+}
+async function getMLBGames(){
+  var d=await espnFetch('https://site.api.espn.com/apis/site/v2/sports/baseball/mlb/scoreboard');
+  if(!d||!d.events||!d.events.length)return [];
+  return d.events.map(function(e){
+    var comp=e.competitions&&e.competitions[0];var teams=comp&&comp.competitors||[];
+    var home=teams.find(function(t){return t.homeAway==='home';});
+    var away=teams.find(function(t){return t.homeAway==='away';});
+    if(!home||!away)return null;
+    var st=e.status&&e.status.type;
+    return{home:home.team.displayName,away:away.team.displayName,hs:home.score||'',as:away.score||'',
+      live:st&&st.name==='STATUS_IN_PROGRESS',final:st&&st.name==='STATUS_FINAL',
+      time:comp.date?new Date(comp.date).toLocaleTimeString('es-CO',{hour:'2-digit',minute:'2-digit',hour12:true,timeZone:'America/Bogota'}):''};
+  }).filter(Boolean);
+}
+async function getTennisGames(){
+  var d=await espnFetch('https://site.api.espn.com/apis/site/v2/sports/tennis/atp/scoreboard');
+  if(!d||!d.events||!d.events.length)return [];
+  return d.events.map(function(e){
+    var comp=e.competitions&&e.competitions[0];var pl=comp&&comp.competitors||[];
+    var p1=pl[0];var p2=pl[1];if(!p1||!p2)return null;
+    var n1=(p1.athlete&&p1.athlete.displayName)||(p1.team&&p1.team.displayName)||'?';
+    var n2=(p2.athlete&&p2.athlete.displayName)||(p2.team&&p2.team.displayName)||'?';
+    var st=e.status&&e.status.type;
+    return{p1:n1,p2:n2,s1:p1.score||'',s2:p2.score||'',
+      tournament:(comp.venue&&comp.venue.fullName)||'ATP Tour',
+      live:st&&st.name==='STATUS_IN_PROGRESS',final:st&&st.name==='STATUS_FINAL'};
+  }).filter(Boolean);
+}
+async function getFutGames(){
+  var leagues=['eng.1','esp.1','ita.1','ger.1','col.1'];var all=[];
+  for(var i=0;i<leagues.length;i++){
+    var d=await espnFetch('https://site.api.espn.com/apis/site/v2/sports/soccer/'+leagues[i]+'/scoreboard');
+    if(d&&d.events)d.events.forEach(function(e){
+      var comp=e.competitions&&e.competitions[0];var teams=comp&&comp.competitors||[];
+      var home=teams.find(function(t){return t.homeAway==='home';});
+      var away=teams.find(function(t){return t.homeAway==='away';});
+      if(!home||!away)return;
+      var st=e.status&&e.status.type;
+      all.push({home:home.team.displayName,away:away.team.displayName,hs:home.score||'',as:away.score||'',
+        live:st&&st.name==='STATUS_IN_PROGRESS',final:st&&st.name==='STATUS_FINAL',
+        time:comp.date?new Date(comp.date).toLocaleTimeString('es-CO',{hour:'2-digit',minute:'2-digit',hour12:true,timeZone:'America/Bogota'}):''});
+    });
+  }
+  return all;
+}
+function mkGI(ico,home,away,score,tag,tc,hint,fn){
+  return '<div class="gi" onclick="'+fn+'">'
+    +'<div class="git"><div class="gih">'+ico+' '+home+'</div><div class="gia">'+away+'</div></div>'
+    +'<div class="gir">'+(score?'<div class="gis">'+score+'</div>':'')
+    +'<span class="tag '+tc+'">'+tag+'</span>'
+    +(hint?'<span class="hint">'+hint+'</span>':'')+'</div></div>';
+}
+
+// AI
+async function AI(prompt,maxT){
+  if(!GK())throw new Error('Falta API Key. Ve a Config y agrega tu key de console.groq.com');
+  var ctrl=new AbortController();var timer=setTimeout(function(){ctrl.abort();},35000);
+  try{
+    var resp=await fetch(GURL,{method:'POST',signal:ctrl.signal,
+      headers:{'Content-Type':'application/json','Authorization':'Bearer '+GK()},
+      body:JSON.stringify({model:'llama-3.3-70b-versatile',max_tokens:maxT||2000,temperature:0.1,
+        messages:[{role:'system',content:'Eres analista deportivo experto. Responde SOLO con JSON valido empezando con {. Sin markdown ni texto extra.'},
+          {role:'user',content:prompt}]})});
+    clearTimeout(timer);
+    if(!resp.ok){var e=await resp.json().catch(function(){return{};});var m=(e.error&&e.error.message)||'';
+      if(resp.status===401)throw new Error('Key invalida. Ve a Config');
+      if(resp.status===429)throw new Error('Limite alcanzado. Espera 1 minuto.');
+      throw new Error(m||'Error '+resp.status);}
+    var data=await resp.json();
+    return(data.choices&&data.choices[0]&&data.choices[0].message&&data.choices[0].message.content)||'';
+  }catch(e){clearTimeout(timer);if(e.name==='AbortError')throw new Error('Tiempo agotado. Intenta de nuevo.');throw e;}
+}
+function PJ(txt){
+  var c=(txt||'').replace(/```json|```/g,'').trim();
+  try{return JSON.parse(c);}catch(e){}
+  var m=c.match(/\{[\s\S]*\}/);if(!m)return null;
+  try{return JSON.parse(m[0]);}catch(e){}
+  try{var s=m[0];var depth=0;for(var i=0;i<s.length;i++){if(s[i]==='{')depth++;else if(s[i]==='}')depth--;}while(depth>0){s+='}';depth--;}return JSON.parse(s);}catch(e){return null;}
+}
+
+// ── HOME ──────────────────────────────────────────────────────────────────
+function pgHM(pg){
+  var picks=getPicks();
+  var wins=picks.filter(function(p){return p.result==='W';}).length;
+  var losses=picks.filter(function(p){return p.result==='L';}).length;
+  var total=wins+losses;
+  var pct=total>0?Math.round(wins/total*100):0;
+  var bk=getBK();
+  var profit=bk.c-bk.s;
+  var pColor=profit>=0?'#3fb950':'#f85149';
+  var pctColor=pct>=55?'#3fb950':pct>=45?'#e3b341':'#f85149';
+  var pctBg=pct>=55?'#238636':pct>=45?'#9e6a03':'#da3633';
+  pg.innerHTML=
+    '<div class="card"><div class="card-b" style="gap:8px">'
+    +'<div style="display:flex;justify-content:space-between;align-items:flex-start">'
+    +'<div><div style="font-size:11px;color:#8b949e">Rendimiento</div><div style="font-size:26px;font-weight:800;color:'+pctColor+'">'+pct+'%</div><div style="font-size:11px;color:#8b949e">acierto ('+total+' picks)</div></div>'
+    +'<div style="text-align:right"><div style="font-size:11px;color:#8b949e">Bankroll</div><div style="font-size:26px;font-weight:800">$'+bk.c.toFixed(0)+'</div><div style="font-size:11px;color:'+pColor+'">'+(profit>=0?'+':'')+'$'+profit.toFixed(0)+'</div></div>'
+    +'</div>'
+    +'<div class="bbar"><div class="bfill" style="width:'+Math.min(pct,100)+'%;background:'+pctBg+'"></div></div>'
+    +'<div style="display:flex;justify-content:space-between;font-size:11px;color:#8b949e"><span>✅ '+wins+' W</span><span>❌ '+losses+' L</span><span>⏳ '+(picks.length-total)+' pendientes</span></div>'
+    +'</div></div>'
+    +'<div class="card"><div class="card-h"><h2>🔍 Buscar Partido</h2></div><div class="card-b">'
+    +'<div class="srwrap"><span class="srico">🔍</span><input class="inp srinp" id="srchQ" placeholder="Lakers vs Celtics, Alcaraz vs Sinner..." autocomplete="off"></div>'
+    +'<div class="chips" id="chips"></div>'
+    +'<button class="btn btn-g" id="srchBtn" onclick="runSearch()">⚡ Analizar</button>'
+    +'<div id="srchRes"></div>'
+    +'</div></div>'
+    +'<div style="font-size:11px;font-weight:700;color:#8b949e;text-transform:uppercase;letter-spacing:.5px">⚡ Partidos de Hoy</div>'
+    +'<div id="hmToday"><div class="ld"><div class="sp"></div><span>Cargando...</span></div></div>'
+    +'<div style="font-size:11px;font-weight:700;color:#8b949e;text-transform:uppercase;letter-spacing:.5px">📋 Últimos Picks</div>'
+    +'<div class="card"><div class="card-b" style="gap:0">'
+    +(picks.length===0?'<div style="color:#8b949e;font-size:13px;text-align:center;padding:10px">Sin picks aún. Analiza un partido y guárdalo.</div>'
+      :picks.slice(0,5).map(function(p){
+        var ic=p.result==='W'?'✅':p.result==='L'?'❌':'⏳';
+        var hc=p.result==='W'?'hw':p.result==='L'?'hl':'hp';
+        return '<div class="hi2"><div class="hico '+hc+'">'+ic+'</div>'
+          +'<div class="hinf"><div class="hmt">'+(p.match||'')+'</div><div class="hpk">'+(p.pick||'')+'</div><div class="hdt">'+(p.date||'')+'</div></div>'
+          +'<span style="font-size:12px;font-weight:700;color:'+(p.conf>=85?'#3fb950':p.conf>=75?'#e3b341':'#8b949e')+'">'+p.conf+'%</span></div>';
+      }).join(''))
+    +'</div></div>'
+    +(picks.length>0?'<button class="btn btn-d" onclick="go(\'trk\',document.querySelectorAll(\'.tab\')[6])">Ver historial completo →</button>':'');
+  // chips
+  var chips=['Lakers vs Celtics','Alcaraz vs Sinner','Real Madrid hoy','Yankees vs Sox'];
+  var cc=G('chips');
+  if(cc)chips.forEach(function(c){var b=document.createElement('button');b.className='chip';b.textContent=c;b.onclick=function(){G('srchQ').value=c;runSearch();};cc.appendChild(b);});
+  var qi=G('srchQ');if(qi)qi.addEventListener('keydown',function(e){if(e.key==='Enter')runSearch();});
+  loadToday();
+}
+async function loadToday(){
+  var el=G('hmToday');if(!el)return;
+  var nba=await getNBAGames();var mlb=await getMLBGames();
+  var today=[];
+  nba.filter(function(g){return !g.final;}).slice(0,3).forEach(function(g){today.push({ico:'🏀',match:g.home+' vs '+g.away,time:g.time});});
+  mlb.filter(function(g){return !g.final;}).slice(0,3).forEach(function(g){today.push({ico:'⚾',match:g.home+' vs '+g.away,time:g.time});});
+  if(!today.length){el.innerHTML='<div style="color:#8b949e;font-size:13px;text-align:center;padding:10px">Sin partidos próximos ahora.</div>';return;}
+  el.innerHTML='<div class="card"><div class="card-b" style="gap:0">'
+    +today.map(function(g){
+      var ms=g.match.replace(/"/g,'').replace(/'/g,'');
+      return '<div class="hi2" style="cursor:pointer" onclick="setSearch(\''+ms+'\')">'
+        +'<div style="font-size:22px;width:34px;text-align:center">'+g.ico+'</div>'
+        +'<div class="hinf"><div class="hmt">'+g.match+'</div><div class="hpk" style="color:#3fb950">Toca para analizar</div></div>'
+        +'<div style="font-size:11px;color:#484f58">'+(g.time||'')+'</div></div>';
+    }).join('')+'</div></div>';
+}
+function setSearch(q){var i=G('srchQ');if(i){i.value=q;runSearch();}}
+async function runSearch(){
+  var q=V('srchQ');if(!q)return;
+  var btn=G('srchBtn');btn.disabled=true;btn.textContent='Analizando...';
+  var el=G('srchRes');el.innerHTML='<div class="ld"><div class="sp"></div><span>Buscando estadísticas 2026...</span></div>';
+  var ql=q.toLowerCase();
+  var sport='football';
+  if(/nba|lakers|celtics|warriors|knicks|heat|nets|bucks|suns|nuggets|thunder|rockets|spurs|blazers|76ers|cavs|pistons|pacers|raptors|jazz|grizzlies|timberwolves|kings|clippers|mavs/.test(ql))sport='basketball';
+  else if(/mlb|yankees|dodgers|red sox|cubs|braves|mets|astros|giants|phillies|guardians|rangers|athletics|angels|royals|twins|tigers|orioles|pirates|brewers|padres|rockies|rays|nationals|reds/.test(ql))sport='baseball';
+  else if(/atp|wta|tennis|alcaraz|sinner|djokovic|medvedev|zverev|fritz|ruud|rublev|tsitsipas|swiatek|sabalenka|gauff/.test(ql))sport='tennis';
+  var sico={football:'⚽',basketball:'🏀',baseball:'⚾',tennis:'🎾'}[sport];
+  var prompts={
+    football:'Analiza partido de futbol: "'+q+'" 2025-26. Fuentes: thestatsdontlie.com, SofaScore. JSON:{"home":"equipo1","away":"equipo2","analisis":"3 oraciones con stats reales","ganador":{"pick":"X gana","conf":74,"why":"razon numerica"},"ct":{"pick":"Over 9.5 corners","conf":82,"why":"X+Y corners/g = Z"},"btts_pk":{"pick":"BTTS Si","conf":80,"why":"X% y Y% BTTS"},"riesgo":"BAJO"}',
+    basketball:'Analiza partido NBA: "'+q+'" 2025-26. Rankings 2025-26: OKC, Cleveland, Boston top. Fuentes: thestatsdontlie.com/nba, basketball-reference. JSON:{"home":"equipo1","away":"equipo2","analisis":"3 oraciones stats reales","ganador":{"pick":"X gana","conf":76,"why":"NetRtg +X.X"},"total":{"pick":"Over 220.5","conf":83,"why":"X pts/g + Y pts/g pace Z"},"riesgo":"BAJO"}',
+    baseball:'Analiza partido MLB: "'+q+'" 2026. Fuentes: baseball-reference.com, fangraphs. JSON:{"home":"equipo1","away":"equipo2","analisis":"3 oraciones stats reales","ganador":{"pick":"X gana","conf":72,"why":"record X-Y vs A-B"},"f5":{"pick":"X lidera 5 inn","conf":68,"why":"razon"},"riesgo":"BAJO"}',
+    tennis:'Analiza partido tennis: "'+q+'" 2026. Rankings ATP: Sinner#1,Alcaraz#2,Djokovic#3,Zverev#4,Medvedev#5,Fritz#6,Ruud#7. Fuentes: atptour.com, tennisabstract. JSON:{"home":"jugador1","away":"jugador2","analisis":"3 oraciones stats reales","ganador":{"pick":"X gana","conf":86,"why":"Ranking #X vs #Y H2H Z-W"},"sets":{"pick":"X en 2 sets","conf":72,"why":"razon"},"riesgo":"BAJO"}'
+  };
+  try{
+    var d=PJ(await AI(prompts[sport],1500));if(!d)throw new Error('Sin resultado. Intenta de nuevo.');
+    var best=d.total||d.ct||d.btts_pk||d.ganador||{};
+    var bc=best.conf||0;
+    var bcClr=bc>=85?'#3fb950':bc>=75?'#e3b341':'#8b949e';
+    var matchStr=(d.home||'')+'_vs_'+(d.away||'');
+    el.innerHTML='<div class="card" style="margin-top:4px"><div class="card-h" style="display:flex;justify-content:space-between;align-items:center">'
+      +'<div><h3 style="font-size:13px;font-weight:600">'+sico+' '+(d.home||'')+' vs '+(d.away||'')+'</h3>'
+      +'<p style="font-size:10px;color:#3fb950;margin-top:2px">'+DS()+'</p></div>'
+      +'</div><div class="card-b">'
+      +'<div class="atx">'+(d.analisis||'')+'</div>'
+      +(d.ganador?PK('🏆','Ganador',d.ganador):'')
+      +(d.total?PK('📊','Total',d.total):'')
+      +(d.ct?PK('📐','Corners',d.ct):'')
+      +(d.btts_pk?PK('⚽','BTTS',d.btts_pk):'')
+      +(d.sets?PK('🎾','Sets',d.sets):'')
+      +(d.f5?PK('5️⃣','Primera Mitad',d.f5):'')
+      +'<div style="display:flex;justify-content:space-between;align-items:center;background:#21262d;border-radius:8px;padding:10px 12px">'
+      +'<span style="font-size:11px;color:#8b949e">⭐ Mejor pick</span>'
+      +'<span style="font-size:13px;font-weight:700;color:'+bcClr+'">'+(best.pick||'–')+' · '+bc+'%</span></div>'
+      +'<div class="g2">'
+      +'<button class="btn btn-g" data-m="'+(d.home||'')+' vs '+(d.away||'')+'" data-p="'+(best.pick||'')+'" data-c="'+bc+'" data-s="'+sico+'" data-d="'+DS()+'" onclick="saveFromBtn(this)">💾 Guardar Pick</button>'
+      +'<button class="btn btn-d" onclick="qParlay(this,\'srchRes\')">🎰 Parlay</button>'
+      +'</div></div></div>';
+  }catch(e){el.innerHTML='<div class="err">⚠️ '+e.message+'</div>';}
+  btn.disabled=false;btn.textContent='⚡ Analizar';
+}
+function saveFromBtn(btn){
+  var data={id:Date.now().toString(),result:'P',match:btn.getAttribute('data-m'),pick:btn.getAttribute('data-p'),conf:parseInt(btn.getAttribute('data-c'))||0,sport:btn.getAttribute('data-s'),date:btn.getAttribute('data-d')};
+  savePick(data);btn.textContent='✅ Guardado';btn.disabled=true;
+  setTimeout(function(){btn.textContent='💾 Guardar Pick';btn.disabled=false;},2000);
+}
+
+// ── NBA ───────────────────────────────────────────────────────────────────
+function pgNBA(pg){
+  pg.innerHTML='<div class="game-list"><div class="glh"><h3>🏀 NBA Hoy</h3><span class="sbdg">📡 ESPN</span></div><div id="nbaG"><div class="ld"><div class="sp"></div><span>Cargando...</span></div></div></div>'
+    +'<div class="card"><div class="card-h"><h2>🏀 Analizar Partido</h2></div><div class="card-b">'
+    +'<div><div class="lbl">Equipo Local</div><input class="inp" id="nh" placeholder="ej: Oklahoma City Thunder" autocomplete="off"></div>'
+    +'<div><div class="lbl">Equipo Visitante</div><input class="inp" id="na" placeholder="ej: Cleveland Cavaliers" autocomplete="off"></div>'
+    +'<div><div class="lbl">Lesionados (opcional)</div><input class="inp" id="ni" placeholder="ej: SGA OUT" autocomplete="off"></div>'
+    +'<button class="btn btn-g" id="nBtn" onclick="runNBA()">🏀 Analizar</button>'
+    +'</div></div><div id="nRes"></div>';
+  getNBAGames().then(function(games){
+    var el=G('nbaG');if(!el)return;
+    if(!games.length){el.innerHTML='<div style="padding:14px;text-align:center;color:#8b949e;font-size:13px">Sin partidos NBA hoy.</div>';return;}
+    el.innerHTML=games.map(function(g){
+      var h=g.home.replace(/'/g,'');var a=g.away.replace(/'/g,'');
+      var sc=(g.live||g.final)?g.hs+'-'+g.as:'';
+      return mkGI('🏀',g.home,g.away,sc,g.live?'🔴 EN VIVO':g.final?'Final':(g.time||'Próximo'),g.live?'tl':g.final?'tf':'ts',!g.final?'🤖 Analizar':'','sNBA(\''+h+'\',\''+a+'\')');
+    }).join('');
+  });
+}
+function sNBA(h,a){if(G('nh'))G('nh').value=h;if(G('na'))G('na').value=a;if(G('nBtn'))G('nBtn').scrollIntoView({behavior:'smooth',block:'center'});}
+async function runNBA(){
+  var h=V('nh'),a=V('na'),inj=V('ni');
+  if(!h||!a){alert('Escribe ambos equipos');return;}
+  LD('nRes','Analizando NBA 2025-26…');dis('nBtn',true);
+  var p='Analiza NBA: '+h+' vs '+a+' ('+DS()+')'+(inj?' LESIONADOS:'+inj:'')+'\n'
+    +'Fuentes: thestatsdontlie.com/nba, basketball-reference.com/leagues/NBA_2026\n'
+    +'Top equipos 2025-26: OKC Thunder, Cleveland Cavaliers, Boston Celtics, NY Knicks, Denver Nuggets\n'
+    +'Stats EQUIPO reales: Record W-L, PTS/g, REB/g, AST/g, Pace, NetRtg, forma 5 partidos (G/P)\n'
+    +'Conf: NetRtg diff>8=85-90%, diff5-8=80-85%, diff<3=max72%\n'
+    +'parlay_picks: array con 2 picks conf>=80 con stat numerica real\n'
+    +'JSON:{"record_h":"W-L","record_a":"W-L","pts_h":115.0,"pts_a":112.0,"reb_h":44.0,"reb_a":42.0,"ast_h":26.0,"ast_a":24.0,"pace_h":100.0,"pace_a":99.0,"net_h":5.0,"net_a":2.0,"forma_h":"G-P-G-G-P","forma_a":"G-G-P-P-G","lesion_h":"ninguno","lesion_a":"ninguno","b2b":"ninguno","h2h":"2-1","linea":220.5,"analisis":"texto con stats reales","ganador":{"pick":"'+h+' gana","conf":78,"why":"NetRtg +X.X vs Y.Y"},"total":{"pick":"Over 220.5","conf":83,"why":"X pts/g + Y pts/g pace Z"},"handicap":{"pick":"'+h+' -4.5","conf":70,"why":"razon"},"dop":{"pick":"'+h+' o visitante gana","conf":74,"why":"razon"},"parlay_picks":[{"pick":"Over 220.5","conf":83,"razon":"115.6+114.1 pts/g pace 101.4"},{"pick":"'+h+' gana","conf":80,"razon":"NetRtg +8.2 vs -1.3"}],"mejor":"Over Total","riesgo":"BAJO"}';
+  try{var d=PJ(await AI(p,2000));if(!d)throw new Error('Error IA. Intenta de nuevo.');renderNBA(d,h,a);}
+  catch(e){ER('nRes',e.message);}
+  dis('nBtn',false);
+}
+function renderNBA(d,h,a){
+  var hn=LW(h),an=LW(a);
+  var hasInj=(d.lesion_h&&d.lesion_h!=='ninguno')||(d.lesion_a&&d.lesion_a!=='ninguno');
+  var o='<div class="card"><div class="card-h"><h3 style="font-size:14px;font-weight:600">🏀 '+h+' vs '+a+'</h3><p style="color:#3fb950;font-size:11px">NBA 2025-26 · '+DS()+'</p></div><div class="card-b">';
+  o+='<div class="sg"><div class="sb"><h4>'+hn+'</h4>'+SR('Récord',d.record_h,'b')+SR('Pts/g',d.pts_h,+d.pts_h>115?'g':'a')+SR('Reb/g',d.reb_h)+SR('Pace',d.pace_h)+SR('NetRtg',d.net_h,+d.net_h>3?'g':+d.net_h>-3?'a':'r')+'</div>';
+  o+='<div class="sb"><h4>'+an+'</h4>'+SR('Récord',d.record_a,'b')+SR('Pts/g',d.pts_a,+d.pts_a>115?'g':'a')+SR('Reb/g',d.reb_a)+SR('Pace',d.pace_a)+SR('NetRtg',d.net_a,+d.net_a>3?'g':+d.net_a>-3?'a':'r')+'</div></div>';
+  o+='<div class="sg"><div class="sb"><h4>'+hn+' Forma</h4><div style="font-size:13px;font-weight:600;margin-top:3px">'+(d.forma_h||'–')+'</div></div><div class="sb"><h4>'+an+' Forma</h4><div style="font-size:13px;font-weight:600;margin-top:3px">'+(d.forma_a||'–')+'</div></div></div>';
+  if(hasInj)o+='<div class="inj"><div class="inj-t">🏥 Lesionados</div>'+(d.lesion_h&&d.lesion_h!=='ninguno'?'<div class="inj-r">❌ <b>'+hn+':</b> '+d.lesion_h+'</div>':'')+(d.lesion_a&&d.lesion_a!=='ninguno'?'<div class="inj-r">❌ <b>'+an+':</b> '+d.lesion_a+'</div>':'')+'</div>';
+  o+='<div class="tags">'+(d.linea?'<span class="tg">📊 Línea: '+d.linea+'</span>':'')+(d.b2b&&d.b2b!=='ninguno'?'<span class="tg" style="color:#ffa198">🔄 B2B</span>':'')+(d.h2h?'<span class="tg" style="color:#388bfd">H2H: '+d.h2h+'</span>':'')+'</div>';
+  o+=WARN+'<div class="atx">'+(d.analisis||'')+'</div>'+BP(d);
+  o+='<div class="plbl">Picks</div>'+PK('🏆','Ganador',d.ganador)+PK('📊','Total',d.total)+PK('➕','Handicap',d.handicap)+PK('🔄','Doble Oport.',d.dop);
+  o+=PBX(d.parlay_picks);
+  var bm=d.ganador||d.total||{};var bc=bm.conf||0;
+  o+='<div class="g2"><button class="btn btn-g" data-m="'+h+' vs '+a+'" data-p="'+(bm.pick||'')+'" data-c="'+bc+'" data-s="🏀" data-d="'+DS()+'" onclick="saveFromBtn(this)">💾 Guardar</button>'
+    +'<button class="btn btn-d" onclick="qParlay(this,\'nRes\')">🎰 Parlay</button></div>';
+  o+='</div></div>';H('nRes',o);
+}
+
+// ── TENNIS ───────────────────────────────────────────────────────────────────
+function pgTEN(pg){
+  pg.innerHTML='<div class="game-list"><div class="glh"><h3>🎾 Tennis Hoy</h3><span class="sbdg">📡 ESPN</span></div><div id="tenG"><div class="ld"><div class="sp"></div><span>Cargando...</span></div></div></div>'
+    +'<div class="card"><div class="card-h"><h2>🎾 Analizar Partido</h2></div><div class="card-b">'
+    +'<div><div class="lbl">Jugador 1</div><input class="inp" id="t1" placeholder="ej: Carlos Alcaraz" autocomplete="off"></div>'
+    +'<div><div class="lbl">Jugador 2</div><input class="inp" id="t2" placeholder="ej: Jannik Sinner" autocomplete="off"></div>'
+    +'<div><div class="lbl">Torneo y Superficie</div><input class="inp" id="tt" placeholder="ej: Madrid Open - Tierra" autocomplete="off"></div>'
+    +'<button class="btn btn-g" id="tBtn" onclick="runTEN()">🎾 Analizar</button>'
+    +'</div></div><div id="tRes"></div>';
+  getTennisGames().then(function(games){
+    var el=G('tenG');if(!el)return;
+    if(!games.length){el.innerHTML='<div style="padding:14px;text-align:center;color:#8b949e;font-size:13px">Sin partidos tennis hoy.</div>';return;}
+    el.innerHTML=games.slice(0,10).map(function(g){
+      var p1=g.p1.replace(/'/g,'');var p2=g.p2.replace(/'/g,'');var tour=(g.tournament||'ATP').replace(/'/g,'');
+      var sc=(g.live||g.final)?g.s1+'-'+g.s2:'';
+      return mkGI('🎾',g.p1,g.p2+' · '+(g.tournament||''),sc,g.live?'🔴 EN VIVO':g.final?'Final':'Próximo',g.live?'tl':g.final?'tf':'ts',!g.final?'🤖 Analizar':'','sTEN(\''+p1+'\',\''+p2+'\',\''+tour+'\')');
+    }).join('');
+  });
+}
+function sTEN(p1,p2,t){if(G('t1'))G('t1').value=p1;if(G('t2'))G('t2').value=p2;if(G('tt'))G('tt').value=t;if(G('tBtn'))G('tBtn').scrollIntoView({behavior:'smooth',block:'center'});}
+async function runTEN(){
+  var p1=V('t1'),p2=V('t2'),tour=V('tt');
+  if(!p1||!p2){alert('Escribe ambos jugadores');return;}
+  LD('tRes','Analizando Tennis 2026…');dis('tBtn',true);
+  var p='Analiza tennis: '+p1+' vs '+p2+(tour?' — '+tour:'')+' ('+DS()+')\n'
+    +'Rankings ATP reales abril 2026: Sinner#1,Alcaraz#2,Djokovic#3,Zverev#4,Medvedev#5,Fritz#6,Ruud#7,Rublev#8,Tsitsipas#9,De Minaur#10\n'
+    +'Fuentes: atptour.com, tennisabstract.com\n'
+    +'Conf: Top5 vs Top30+=88-92%, Top10 vs Top50+=85-90%, diff<15 ranks=max74%\n'
+    +'parlay_picks: array con 2 picks conf>=82\n'
+    +'JSON:{"rank1":3,"rank2":28,"h2h_total":"8-4","h2h_surf":"5-2","h2h_2026":"1-0","forma1":"G-G-G-P-G","forma2":"G-P-G-G-P","surf1pct":68.0,"surf2pct":62.0,"s1pct":65.0,"s2pct":61.0,"superficie":"Tierra","analisis":"texto real","ganador":{"pick":"'+p1+' gana","conf":88,"why":"Ranking #X vs #Y, H2H Z-W"},"hsets":{"pick":"'+p1+' en 2 sets","conf":74,"why":"razon"},"total_sets":{"pick":"Over 2.5 sets","conf":71,"why":"razon"},"set1":{"pick":"'+p1+' Set 1","conf":72,"why":"razon"},"parlay_picks":[{"pick":"'+p1+' gana","conf":88,"razon":"Top5 vs Top30"}],"mejor":"ganador","riesgo":"BAJO"}';
+  try{var d=PJ(await AI(p,2000));if(!d)throw new Error('Error IA. Intenta de nuevo.');renderTEN(d,p1,p2,tour);}
+  catch(e){ER('tRes',e.message);}
+  dis('tBtn',false);
+}
+function renderTEN(d,p1,p2,tour){
+  var o='<div class="card"><div class="card-h"><h3 style="font-size:14px;font-weight:600">🎾 '+p1+' vs '+p2+'</h3><p style="color:#3fb950;font-size:11px">'+(tour||'ATP/WTA')+' · '+DS()+'</p></div><div class="card-b">';
+  o+='<div class="sg"><div class="sb"><h4>'+p1+'</h4>'+SR('Ranking',d.rank1?'#'+d.rank1:'–','b')+SR('Forma',d.forma1)+SR('1er Serv%',d.s1pct?d.s1pct+'%':'')+SR('Sup%',d.surf1pct?d.surf1pct+'%':'')+'</div>';
+  o+='<div class="sb"><h4>'+p2+'</h4>'+SR('Ranking',d.rank2?'#'+d.rank2:'–','b')+SR('Forma',d.forma2)+SR('1er Serv%',d.s2pct?d.s2pct+'%':'')+SR('Sup%',d.surf2pct?d.surf2pct+'%':'')+'</div></div>';
+  o+='<div class="tags">'+(d.h2h_total?'<span class="tg" style="color:#388bfd">H2H: '+d.h2h_total+'</span>':'')+(d.h2h_surf?'<span class="tg">Sup: '+d.h2h_surf+'</span>':'')+(d.h2h_2026?'<span class="tg" style="color:#3fb950">2026: '+d.h2h_2026+'</span>':'')+(d.superficie?'<span class="tg">🎾 '+d.superficie+'</span>':'')+'</div>';
+  o+=WARN+'<div class="atx">'+(d.analisis||'')+'</div>'+BP(d);
+  o+='<div class="plbl">Picks</div>'+PK('🏆','Ganador',d.ganador)+PK('📊','Sets',d.hsets)+PK('➕','Total Sets',d.total_sets)+PK('⏱','Set 1',d.set1);
+  o+=PBX(d.parlay_picks);
+  var bm=d.ganador||{};var bc=bm.conf||0;
+  o+='<div class="g2"><button class="btn btn-g" data-m="'+p1+' vs '+p2+'" data-p="'+(bm.pick||'')+'" data-c="'+bc+'" data-s="🎾" data-d="'+DS()+'" onclick="saveFromBtn(this)">💾 Guardar</button>'
+    +'<button class="btn btn-d" onclick="qParlay(this,\'tRes\')">🎰 Parlay</button></div>';
+  o+='</div></div>';H('tRes',o);
+}
+
+// ── FUTBOL ────────────────────────────────────────────────────────────────────
+var LG={premier:{n:'Premier League',c:10.2,k:3.8,g:2.7},laliga:{n:'La Liga',c:9.8,k:4.2,g:2.5},seriea:{n:'Serie A',c:9.5,k:4.5,g:2.6},bundesliga:{n:'Bundesliga',c:9.9,k:3.5,g:3.0},ligue1:{n:'Ligue 1',c:9.3,k:4.0,g:2.6},champions:{n:'Champions',c:10.0,k:3.2,g:2.9},mls:{n:'MLS',c:8.6,k:3.9,g:2.8},ligacol:{n:'Liga BetPlay',c:7.8,k:4.8,g:2.3}};
+function pgFUT(pg){
+  var ligOpts=Object.entries(LG).map(function(e){return '<option value="'+e[0]+'">'+e[1].n+'</option>';}).join('');
+  pg.innerHTML='<div class="game-list"><div class="glh"><h3>⚽ Fútbol Hoy</h3><span class="sbdg">📡 ESPN</span></div><div id="futG"><div class="ld"><div class="sp"></div><span>Cargando...</span></div></div></div>'
+    +'<div class="card"><div class="card-h"><h2>⚽ Analizar Partido</h2></div><div class="card-b">'
+    +'<div><div class="lbl">Liga</div><select class="sel" id="fl"><option value="">Otra liga</option>'+ligOpts+'</select></div>'
+    +'<div><div class="lbl">Equipo Local</div><input class="inp" id="fh" placeholder="ej: Arsenal" autocomplete="off"></div>'
+    +'<div><div class="lbl">Equipo Visitante</div><input class="inp" id="fa" placeholder="ej: Chelsea" autocomplete="off"></div>'
+    +'<button class="btn btn-g" id="fBtn" onclick="runFUT()">⚽ Analizar</button>'
+    +'</div></div><div id="fRes"></div>';
+  getFutGames().then(function(games){
+    var el=G('futG');if(!el)return;
+    if(!games.length){el.innerHTML='<div style="padding:14px;text-align:center;color:#8b949e;font-size:13px">Sin partidos hoy.</div>';return;}
+    el.innerHTML=games.slice(0,15).map(function(g){
+      var h=g.home.replace(/'/g,'');var a=g.away.replace(/'/g,'');
+      var sc=(g.live||g.final)?g.hs+'-'+g.as:'';
+      return mkGI('⚽',g.home,g.away,sc,g.live?'🔴 EN VIVO':g.final?'Final':(g.time||'Próximo'),g.live?'tl':g.final?'tf':'ts',!g.final?'🤖 Analizar':'','sFUT(\''+h+'\',\''+a+'\')');
+    }).join('');
+  });
+}
+function sFUT(h,a){if(G('fh'))G('fh').value=h;if(G('fa'))G('fa').value=a;if(G('fBtn'))G('fBtn').scrollIntoView({behavior:'smooth',block:'center'});}
+async function runFUT(){
+  var h=V('fh'),a=V('fa'),lig=V('fl');
+  if(!h||!a){alert('Escribe ambos equipos');return;}
+  var lg=lig&&LG[lig]?LG[lig]:{n:'Liga',c:9.0,k:4.0,g:2.6};
+  LD('fRes','Analizando Fútbol 2026…');dis('fBtn',true);
+  var p='Analiza futbol: '+h+' vs '+a+' — '+lg.n+' ('+DS()+')\n'
+    +'Fuentes: thestatsdontlie.com/football, SofaScore, FBref\n'
+    +'Liga stats: Corners/g='+lg.c+', Tarjetas/g='+lg.k+', Goles/g='+lg.g+'\n'
+    +'Conf corners Over: suma>linea+1.5=83-89%. BTTS: ambos>70%+xG>1.1=83-88%\n'
+    +'parlay_picks: 2-3 picks conf>=80 con stat numerica\n'
+    +'JSON:{"record_h":"W-D-L","record_a":"W-D-L","pos_h":2,"pos_a":5,"xg_h":1.6,"xg_a":1.4,"cor_h":5.5,"cor_a":4.8,"btts_h":65,"btts_a":60,"forma_h":"G-E-G-P-G","forma_a":"G-G-E-P-G","lesion_h":"ninguno","lesion_a":"ninguno","linea_goles":2.5,"linea_corners":9.5,"h2h":"2-1-2","analisis":"texto real con stats","ganador":{"pick":"'+h+' gana","conf":72,"why":"razon"},"dop":{"pick":"'+h+' o Empate","conf":78,"why":"razon"},"ct":{"pick":"Over 9.5 corners","conf":84,"why":"'+h+' X + '+a+' Y = Z > 9.5"},"btts_pk":{"pick":"BTTS Si","conf":83,"why":"X% y Y% BTTS"},"goles":{"pick":"Over 2.5","conf":76,"why":"razon"},"tarjetas":{"pick":"Over 3.5","conf":68,"why":"razon"},"parlay_picks":[{"pick":"Over 9.5 corners","conf":84,"razon":"X+Y=Z corners/g"},{"pick":"BTTS Si","conf":83,"razon":"X% y Y%"}],"mejor":"corners Over","riesgo":"BAJO"}';
+  try{var d=PJ(await AI(p,2200));if(!d)throw new Error('Error IA. Intenta de nuevo.');renderFUT(d,h,a,lg);}
+  catch(e){ER('fRes',e.message);}
+  dis('fBtn',false);
+}
+function renderFUT(d,h,a,lg){
+  var hn=LW(h),an=LW(a);
+  var o='<div class="card"><div class="card-h"><h3 style="font-size:14px;font-weight:600">⚽ '+h+' vs '+a+'</h3><p style="color:#3fb950;font-size:11px">'+lg.n+' · '+DS()+'</p></div><div class="card-b">';
+  o+='<div class="sg"><div class="sb"><h4>'+hn+'</h4>'+SR('Récord',d.record_h,'b')+SR('Posición','#'+d.pos_h,'g')+SR('xG/g',d.xg_h)+SR('Corners/g',d.cor_h,+d.cor_h>5.5?'g':'a')+SR('BTTS%',d.btts_h?d.btts_h+'%':'–')+'</div>';
+  o+='<div class="sb"><h4>'+an+'</h4>'+SR('Récord',d.record_a,'b')+SR('Posición','#'+d.pos_a,'g')+SR('xG/g',d.xg_a)+SR('Corners/g',d.cor_a,+d.cor_a>5.5?'g':'a')+SR('BTTS%',d.btts_a?d.btts_a+'%':'–')+'</div></div>';
+  o+='<div class="sg"><div class="sb"><h4>'+hn+' Forma</h4><div style="font-size:13px;font-weight:600;margin-top:3px">'+(d.forma_h||'–')+'</div></div><div class="sb"><h4>'+an+' Forma</h4><div style="font-size:13px;font-weight:600;margin-top:3px">'+(d.forma_a||'–')+'</div></div></div>';
+  if((d.lesion_h&&d.lesion_h!=='ninguno')||(d.lesion_a&&d.lesion_a!=='ninguno'))
+    o+='<div class="inj"><div class="inj-t">🏥 Bajas</div>'+(d.lesion_h&&d.lesion_h!=='ninguno'?'<div class="inj-r">❌ <b>'+hn+':</b> '+d.lesion_h+'</div>':'')+(d.lesion_a&&d.lesion_a!=='ninguno'?'<div class="inj-r">❌ <b>'+an+':</b> '+d.lesion_a+'</div>':'')+'</div>';
+  o+='<div class="tags">'+(d.h2h?'<span class="tg" style="color:#388bfd">H2H: '+d.h2h+'</span>':'')+(d.linea_goles?'<span class="tg">⚽ Goles: '+d.linea_goles+'</span>':'')+(d.linea_corners?'<span class="tg">📐 Corners: '+d.linea_corners+'</span>':'')+'</div>';
+  o+=WARN+'<div class="atx">'+(d.analisis||'')+'</div>'+BP(d);
+  o+='<div class="plbl">Picks</div>'+PK('🏆','Ganador',d.ganador)+PK('🔄','Doble Oport.',d.dop)+PK('📐','Corners',d.ct)+PK('⚽','BTTS',d.btts_pk)+PK('📊','Goles',d.goles)+PK('🟨','Tarjetas',d.tarjetas);
+  o+=PBX(d.parlay_picks);
+  var bm=d.ct||d.btts_pk||d.ganador||{};var bc=bm.conf||0;
+  o+='<div class="g2"><button class="btn btn-g" data-m="'+h+' vs '+a+'" data-p="'+(bm.pick||'')+'" data-c="'+bc+'" data-s="⚽" data-d="'+DS()+'" onclick="saveFromBtn(this)">💾 Guardar</button>'
+    +'<button class="btn btn-d" onclick="qParlay(this,\'fRes\')">🎰 Parlay</button></div>';
+  o+='</div></div>';H('fRes',o);
+}
+
+// ── MLB ───────────────────────────────────────────────────────────────────────
+function pgMLB(pg){
+  pg.innerHTML='<div class="game-list"><div class="glh"><h3>⚾ MLB Hoy</h3><span class="sbdg">📡 ESPN</span></div><div id="mlbG"><div class="ld"><div class="sp"></div><span>Cargando...</span></div></div></div>'
+    +'<div class="card"><div class="card-h"><h2>⚾ Analizar Partido</h2></div><div class="card-b">'
+    +'<div><div class="lbl">Equipo Local</div><input class="inp" id="mh" placeholder="ej: LA Dodgers" autocomplete="off"></div>'
+    +'<div><div class="lbl">Equipo Visitante</div><input class="inp" id="ma" placeholder="ej: SF Giants" autocomplete="off"></div>'
+    +'<div><div class="lbl">Pitchers (opcional)</div><input class="inp" id="mp" placeholder="ej: Yamamoto vs Webb" autocomplete="off"></div>'
+    +'<button class="btn btn-g" id="mBtn" onclick="runMLB()">⚾ Analizar</button>'
+    +'</div></div><div id="mRes"></div>';
+  getMLBGames().then(function(games){
+    var el=G('mlbG');if(!el)return;
+    if(!games.length){el.innerHTML='<div style="padding:14px;text-align:center;color:#8b949e;font-size:13px">Sin partidos MLB hoy.</div>';return;}
+    el.innerHTML=games.map(function(g){
+      var h=g.home.replace(/'/g,'');var a=g.away.replace(/'/g,'');
+      var sc=(g.live||g.final)?g.hs+'-'+g.as:'';
+      return mkGI('⚾',g.home,g.away,sc,g.live?'🔴 EN VIVO':g.final?'Final':(g.time||'Próximo'),g.live?'tl':g.final?'tf':'ts',!g.final?'🤖 Analizar':'','sMLB(\''+h+'\',\''+a+'\')');
+    }).join('');
+  });
+}
+function sMLB(h,a){if(G('mh'))G('mh').value=h;if(G('ma'))G('ma').value=a;if(G('mBtn'))G('mBtn').scrollIntoView({behavior:'smooth',block:'center'});}
+async function runMLB(){
+  var h=V('mh'),a=V('ma'),pit=V('mp');
+  if(!h||!a){alert('Escribe ambos equipos');return;}
+  LD('mRes','Analizando MLB 2026…');dis('mBtn',true);
+  var p='Analiza MLB: '+h+' vs '+a+' ('+DS()+')'+(pit?' Pitchers:'+pit:'')+'\n'
+    +'Fuentes: baseball-reference.com/leagues/MLB/2026, fangraphs.com\n'
+    +'Top equipos 2026: LA Dodgers, NY Yankees, Atlanta Braves, Phillies, Astros\n'
+    +'Stats reales: Record W-L 2026, ERA equipo, OPS, WHIP\n'
+    +'⚠️ parlay_picks: SOLO picks de ganador o F5 (primera mitad), NUNCA Under/Over total carreras\n'
+    +'JSON:{"record_h":"16-7","record_a":"10-13","era_h":3.45,"era_a":4.12,"ops_h":0.823,"ops_a":0.751,"whip_h":1.18,"whip_a":1.34,"forma_h":"G-G-P-G-G","forma_a":"G-P-G-P-G","h2h_2026":"3-1","total_linea":8.5,"analisis":"texto real","ganador":{"pick":"'+h+' gana","conf":74,"why":"Record 16-7 vs 10-13"},"carrera_t":{"pick":"Over 8.5","conf":68,"why":"ADVERTENCIA: ERA no verificable"},"f5":{"pick":"'+h+' lidera 5 inn","conf":70,"why":"razon"},"run_line":{"pick":"'+h+' -1.5","conf":63,"why":"razon"},"parlay_picks":[{"pick":"'+h+' gana","conf":74,"razon":"Record 16-7 vs 10-13, ERA equipo 3.45"}],"mejor":"ganador","riesgo":"BAJO"}';
+  try{var d=PJ(await AI(p,2000));if(!d)throw new Error('Error IA. Intenta de nuevo.');renderMLB(d,h,a,pit);}
+  catch(e){ER('mRes',e.message);}
+  dis('mBtn',false);
+}
+function renderMLB(d,h,a,pit){
+  var hn=LW(h),an=LW(a);
+  var o='<div class="card"><div class="card-h"><h3 style="font-size:14px;font-weight:600">⚾ '+h+' vs '+a+'</h3><p style="color:#3fb950;font-size:11px">MLB 2026 · '+DS()+'</p></div><div class="card-b">';
+  o+='<div class="sg"><div class="sb"><h4>'+hn+'</h4>'+SR('Récord 2026',d.record_h,'b')+SR('ERA',d.era_h,+d.era_h<3.5?'g':+d.era_h<4.5?'a':'r')+SR('OPS',d.ops_h,+d.ops_h>.800?'g':+d.ops_h>.720?'a':'r')+SR('WHIP',d.whip_h)+'</div>';
+  o+='<div class="sb"><h4>'+an+'</h4>'+SR('Récord 2026',d.record_a,'b')+SR('ERA',d.era_a,+d.era_a<3.5?'g':+d.era_a<4.5?'a':'r')+SR('OPS',d.ops_a,+d.ops_a>.800?'g':+d.ops_a>.720?'a':'r')+SR('WHIP',d.whip_a)+'</div></div>';
+  o+='<div class="sg"><div class="sb"><h4>'+hn+' Forma</h4><div style="font-size:13px;font-weight:600;margin-top:3px">'+(d.forma_h||'–')+'</div></div><div class="sb"><h4>'+an+' Forma</h4><div style="font-size:13px;font-weight:600;margin-top:3px">'+(d.forma_a||'–')+'</div></div></div>';
+  o+='<div class="tags">'+(d.h2h_2026?'<span class="tg" style="color:#388bfd">H2H 2026: '+d.h2h_2026+'</span>':'')+(d.total_linea?'<span class="tg">Total: '+d.total_linea+'</span>':'')+(pit?'<span class="tg">⚾ '+pit+'</span>':'')+'</div>';
+  o+='<div style="background:rgba(248,81,73,.06);border:1px solid rgba(248,81,73,.25);border-radius:8px;padding:8px 12px;font-size:11px;color:#ffa198">⚠️ Over/Under total carreras NO recomendado en parlay — ERA pitchers no verificable.</div>';
+  o+='<div class="atx">'+(d.analisis||'')+'</div>'+BP(d);
+  o+='<div class="plbl">Picks</div>'+PK('🏆','Ganador',d.ganador)+PK('5️⃣','Primera Mitad',d.f5)+PK('➕','Run Line',d.run_line);
+  o+=PBX(d.parlay_picks);
+  var bm=d.ganador||{};var bc=bm.conf||0;
+  o+='<div class="g2"><button class="btn btn-g" data-m="'+h+' vs '+a+'" data-p="'+(bm.pick||'')+'" data-c="'+bc+'" data-s="⚾" data-d="'+DS()+'" onclick="saveFromBtn(this)">💾 Guardar</button>'
+    +'<button class="btn btn-d" onclick="qParlay(this,\'mRes\')">🎰 Parlay</button></div>';
+  o+='</div></div>';H('mRes',o);
+}
+
+// ── PARLAY ────────────────────────────────────────────────────────────────────
+function pgPAR(pg){
+  var spOpts=['nba','ten','fut','mlb'].map(function(s){
+    var icons={nba:'🏀',ten:'🎾',fut:'⚽',mlb:'⚾'};
+    return '<button class="spb'+(PS.has(s)?' on':'')+'" id="sp_'+s+'" onclick="togSP(\''+s+'\')">'
+      +'<span class="ico">'+icons[s]+'</span><span class="nm">'+s.toUpperCase()+'</span></button>';
+  }).join('');
+  var cnOpts=['3','4','5','6'].map(function(n){
+    return '<button class="cnb'+(PN===+n?' on':'')+'" onclick="setCN('+n+',this)"><span class="cn">'+n+'</span><span class="cl">picks</span></button>';
+  }).join('');
+  pg.innerHTML='<div class="card"><div class="card-h"><h2>🎰 Mega Parlay IA</h2><p>Picks automáticos 82%+</p></div><div class="card-b">'
+    +'<div class="lbl">Deportes</div><div class="spg">'+spOpts+'</div>'
+    +'<div class="lbl" style="margin-top:4px">Número de picks</div><div class="g4">'+cnOpts+'</div>'
+    +'<button class="btn btn-g" id="pBtn" onclick="runPAR()">🎰 Generar Mega Parlay</button>'
+    +'</div></div><div id="pRes"></div>';
+}
+function togSP(s){PS.has(s)?PS.delete(s):PS.add(s);var b=G('sp_'+s);if(b)b.classList.toggle('on');}
+function setCN(n,btn){PN=+n;document.querySelectorAll('.cnb').forEach(function(b){b.classList.remove('on');});if(btn)btn.classList.add('on');}
+async function runPAR(){
+  if(!PS.size){alert('Selecciona al menos un deporte');return;}
+  var btn=G('pBtn');btn.disabled=true;btn.textContent='Generando...';
+  LD('pRes','Generando Mega Parlay '+PN+' picks…');
+  var nbaG=[],mlbG=[],tenG=[];
+  if(PS.has('nba'))nbaG=await getNBAGames();
+  if(PS.has('mlb'))mlbG=await getMLBGames();
+  if(PS.has('ten'))tenG=await getTennisGames();
+  var nbaR=nbaG.filter(function(g){return !g.final;});
+  var mlbR=mlbG.filter(function(g){return !g.final;});
+  var tenR=tenG.filter(function(g){return !g.final;}).slice(0,6);
+  var nbaStr=nbaR.map(function(g){return g.home+' vs '+g.away+(g.time?' ('+g.time+')':'');}).join(' | ');
+  var mlbStr=mlbR.map(function(g){return g.home+' vs '+g.away+(g.time?' ('+g.time+')':'');}).join(' | ');
+  var tenStr=tenR.map(function(g){return g.p1+' vs '+g.p2;}).join(' | ');
+  // Build context from real ESPN games
+  var ctx = '';
+  if(PS.has('nba')) ctx += nbaStr ? '🏀 NBA HOY: '+nbaStr+'\n' : '🏀 NBA: playoffs en curso\n';
+  if(PS.has('mlb')) ctx += mlbStr ? '⚾ MLB HOY: '+mlbStr+'\n' : '⚾ MLB: temporada regular en curso\n';
+  if(PS.has('ten')) ctx += tenStr ? '🎾 TENNIS HOY: '+tenStr+'\n' : '🎾 TENNIS: Madrid Open / Roland Garros en curso\n';
+  if(PS.has('fut')) ctx += '⚽ FUTBOL: Premier League / La Liga / Serie A en curso\n';
+
+  var p='Eres un analista deportivo. Genera un parlay de EXACTAMENTE '+PN+' picks para HOY '+DS()+'.\n\n'
+    +'CONTEXTO DE PARTIDOS:\n'+ctx+'\n'
+    +'INSTRUCCIONES:\n'
+    +'1. Usa los partidos del contexto si los hay. Si no hay partidos específicos, usa partidos reales que sepas que se juegan hoy sábado en estas ligas.\n'
+    +'2. DEPORTES seleccionados: '+[...PS].join(', ')+'\n'
+    +'3. Genera EXACTAMENTE '+PN+' picks — NUNCA devuelvas array vacío\n'
+    +'4. Confianza mínima 80% por pick\n'
+    +'5. Rankings ATP 2026: Sinner#1, Alcaraz#2, Djokovic#3, Zverev#4, Medvedev#5\n'
+    +'6. NBA top 2025-26: OKC Thunder, Cleveland Cavaliers, Boston Celtics\n'
+    +'7. PROHIBIDO: MLB Over/Under total carreras (ERA no verificable)\n'
+    +'8. Cada razón con estadística numérica real\n\n'
+    +'Responde SOLO con JSON válido:\n'
+    +'{"picks":[{"deporte":"NBA","liga":"🏀 NBA Playoffs","partido":"Celtics vs Knicks","mercado":"Over Total","pick":"Over 215.5","conf":85,"razon":"Celtics 115.6pts/g + Knicks 112.3pts/g, pace ambos >100"},{"deporte":"Tennis","liga":"🎾 Madrid Open","partido":"Alcaraz vs Musetti","mercado":"Ganador","pick":"Alcaraz gana","conf":88,"razon":"Ranking #2 vs #25, H2H 6-0 a favor Alcaraz en tierra"}],"conf_avg":"86%","estrategia":"Combinación NBA playoffs + Tennis tierra donde hay diferencia de ranking clara","advertencia":"Verifica partidos en SofaScore antes de apostar"}';
+  try{
+    var txt=await AI(p,2500);
+    var d=PJ(txt);
+    if(!d){throw new Error('Respuesta inválida. Toca Regenerar.');}
+    if(!d.picks||!d.picks.length){
+      // Try to extract picks from raw text if JSON failed
+      throw new Error('Groq no generó picks válidos. Toca Regenerar — a veces tarda 2 intentos.');
+    }
+    renderParlay(d);
+  }
+  catch(e){ER('pRes',e.message);}
+  btn.disabled=false;btn.textContent='🔄 Regenerar Parlay';
+}
+function renderParlay(data){
+  var picks=data.picks||[];
+  if(!picks.length){H('pRes','<div class="nop">Sin picks. Toca Regenerar.</div>');return;}
+  var cuota=picks.reduce(function(a,p){return a*(1/((p.conf||82)/100));},1).toFixed(2);
+  var avg=(picks.reduce(function(a,p){return a+(p.conf||82);},0)/picks.length).toFixed(0);
+  var ec=+avg>=87?'#3fb950':+avg>=82?'#56d364':'#e3b341';
+  var sc={NBA:'#f0883e',Tennis:'#a371f7',Futbol:'#3fb950',Beisbol:'#f85149'};
+  var si={NBA:'🏀',Tennis:'🎾',Futbol:'⚽',Beisbol:'⚾'};
+  var rows=picks.map(function(p,i){
+    var c=p.conf||82;var cc=c>=87?'#3fb950':c>=82?'#56d364':'#e3b341';
+    return '<div class="mpk"><div class="mpksp">'
+      +'<span style="width:22px;height:22px;border-radius:50%;background:#238636;color:#fff;font-size:11px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0">'+(i+1)+'</span>'
+      +'<span class="mpknm" style="color:'+(sc[p.deporte]||'#8b949e')+'">'+(si[p.deporte]||'🏆')+' '+(p.deporte||'')+' · '+(p.liga||'')+'</span>'
+      +'<span class="mpkma">'+(p.partido||'')+'</span></div>'
+      +'<div class="mpkt"><span class="mpkmk">'+(p.mercado||'')+'</span><span class="mpkpc" style="color:'+cc+'">'+c+'%</span></div>'
+      +'<div class="mpkv">'+(p.pick||'')+'</div><div class="mpkw">'+(p.razon||'')+'</div></div>';
+  }).join('');
+  var gains=[10,25,50,100,200].map(function(x){return '<div class="mg"><div class="mgl">$'+x+'</div><div class="mga">$'+(x*parseFloat(cuota)).toFixed(0)+'</div></div>';}).join('');
+  H('pRes','<div class="mpr"><div style="text-align:center;margin-bottom:14px">'
+    +'<div style="font-size:28px;margin-bottom:5px">🎰</div>'
+    +'<div style="font-size:20px;font-weight:800">MEGA PARLAY '+picks.length+' PICKS</div>'
+    +'<span style="display:inline-block;padding:4px 14px;border-radius:20px;font-size:12px;font-weight:700;background:'+ec+'22;color:'+ec+';border:1px solid '+ec+'44;margin-top:5px">~'+avg+'% · '+DS()+'</span>'
+    +'<div style="font-size:28px;font-weight:800;color:#e3b341;margin-top:6px">'+cuota+'x</div></div>'
+    +rows
+    +(data.estrategia?'<div style="background:rgba(13,32,16,.4);border-radius:8px;padding:12px;margin-top:8px"><div style="font-size:10px;color:#3fb950;font-weight:700;text-transform:uppercase;margin-bottom:4px">💡 Estrategia</div><div style="font-size:12px;color:#56d364;line-height:1.5">'+data.estrategia+'</div></div>':'')
+    +(data.advertencia?'<div style="background:rgba(248,81,73,.08);border:1px solid rgba(248,81,73,.3);border-radius:8px;padding:10px;margin-top:8px;font-size:12px;color:#ffa198">⚠ '+data.advertencia+'</div>':'')
+    +'<div class="mgn">'+gains+'</div>'
+    +'<div style="background:rgba(248,81,73,.08);border:1px solid rgba(248,81,73,.3);border-radius:8px;padding:10px;margin-top:8px;font-size:11px;color:#ffa198">⚠️ Verifica en <b>thestatsdontlie.com</b> · <b>SofaScore</b> antes de apostar</div>'
+    +'<div class="disc">Solo orientativo · Juega responsablemente</div></div>');
+}
+
+// Quick Parlay from any sport tab
+async function qParlay(btn,srcId){
+  btn.disabled=true;btn.textContent='Generando...';
+  var nbaG=await getNBAGames();
+  var nbaStr=nbaG.filter(function(g){return !g.final;}).map(function(g){return g.home+' vs '+g.away;}).join(' | ')||'Sin partidos NBA hoy';
+  var tenG=await getTennisGames();
+  var tenStr=tenG.filter(function(g){return !g.final;}).slice(0,5).map(function(g){return g.p1+' vs '+g.p2;}).join(' | ')||'';
+  var p='Genera PARLAY de 3 picks para HOY '+DS()+'.\n\n'
+    +'PARTIDOS ESPN REALES:\n'
+    +'NBA HOY (USA SOLO ESTOS): '+nbaStr+'\n'
+    +(tenStr?'TENNIS HOY (USA SOLO ESTOS): '+tenStr+'\n':'')
+    +'\nREGLAS:\n1. Picks de NBA de la lista ESPN (Over Total si ambos>112pts/g y pace>100)\n'
+    +'2. Tennis de la lista ESPN (Top10 vs Top40+, rankings: Sinner#1,Alcaraz#2,Djokovic#3)\n'
+    +'3. NO incluyas MLB Under/Over total carreras\n'
+    +'4. Conf min 82% por pick, razon con numero real\n\n'
+    +'JSON:{"picks":[{"deporte":"NBA","liga":"NBA","partido":"EXACTO de lista ESPN","mercado":"Over Total","pick":"Over 225.5","conf":85,"razon":"stat numerica real"}],"conf_avg":"85%","estrategia":"texto corto"}';
+  try{
+    var d=PJ(await AI(p,1500));if(!d||!d.picks||!d.picks.length)throw new Error('Sin picks');
+    var cuota=d.picks.reduce(function(a,p){return a*(1/((p.conf||82)/100));},1).toFixed(2);
+    var avg=(d.picks.reduce(function(a,p){return a+(p.conf||82);},0)/d.picks.length).toFixed(0);
+    var ec=+avg>=87?'#3fb950':'#56d364';
+    var sc={NBA:'#f0883e',Tennis:'#a371f7',Futbol:'#3fb950',Beisbol:'#f85149'};
+    var si={NBA:'🏀',Tennis:'🎾',Futbol:'⚽',Beisbol:'⚾'};
+    var rows=d.picks.map(function(p,i){
+      var c=p.conf||82;var cc=c>=87?'#3fb950':c>=82?'#56d364':'#e3b341';
+      return '<div class="mpk"><div class="mpksp">'
+        +'<span style="width:22px;height:22px;border-radius:50%;background:#238636;color:#fff;font-size:11px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0">'+(i+1)+'</span>'
+        +'<span class="mpknm" style="color:'+(sc[p.deporte]||'#8b949e')+'">'+(si[p.deporte]||'🏆')+' '+p.deporte+' · '+p.liga+'</span>'
+        +'<span class="mpkma">'+p.partido+'</span></div>'
+        +'<div class="mpkt"><span class="mpkmk">'+p.mercado+'</span><span class="mpkpc" style="color:'+cc+'">'+c+'%</span></div>'
+        +'<div class="mpkv">'+p.pick+'</div><div class="mpkw">'+p.razon+'</div></div>';
+    }).join('');
+    var gains=[10,25,50,100].map(function(x){return '<div class="p2"><div class="p2l">$'+x+'</div><div class="p2a">$'+(x*parseFloat(cuota)).toFixed(0)+'</div></div>';}).join('');
+    var html='<div class="mpr" style="margin-top:12px"><div style="text-align:center;margin-bottom:12px">'
+      +'<div style="font-size:18px;font-weight:800">🎰 PARLAY RECOMENDADO</div>'
+      +'<span style="display:inline-block;padding:3px 12px;border-radius:20px;font-size:11px;font-weight:700;background:'+ec+'22;color:'+ec+';border:1px solid '+ec+'44;margin-top:4px">~'+avg+'% · ~'+cuota+'x</span></div>'
+      +rows+(d.estrategia?'<div style="background:rgba(13,32,16,.4);border-radius:8px;padding:10px;margin-top:8px"><div style="font-size:10px;color:#3fb950;font-weight:700;text-transform:uppercase;margin-bottom:3px">💡 Estrategia</div><div style="font-size:12px;color:#56d364;line-height:1.5">'+d.estrategia+'</div></div>':'')
+      +'<div class="pgn">'+gains+'</div>'
+      +'<div style="background:rgba(248,81,73,.1);border:1px solid rgba(248,81,73,.3);border-radius:8px;padding:9px;margin-top:8px;font-size:11px;color:#ffa198">⚠️ Verifica en <b>thestatsdontlie.com</b> · <b>SofaScore</b></div></div>';
+    var container=G(srcId);
+    if(container){var box=document.createElement('div');box.innerHTML=html;container.appendChild(box.firstChild);setTimeout(function(){container.lastChild.scrollIntoView({behavior:'smooth',block:'start'});},100);}
+  }catch(e){alert('Error parlay: '+e.message);}
+  btn.disabled=false;btn.textContent='🎰 Parlay';
+}
+
+// ── TRACKER ───────────────────────────────────────────────────────────────────
+function pgTRK(pg){
+  var picks=getPicks();
+  var wins=picks.filter(function(p){return p.result==='W';}).length;
+  var losses=picks.filter(function(p){return p.result==='L';}).length;
+  var pending=picks.filter(function(p){return p.result==='P';}).length;
+  var total=wins+losses;
+  var pct=total>0?Math.round(wins/total*100):0;
+  var bk=getBK();
+  var profit=bk.c-bk.s;
+  var pColor=profit>=0?'#3fb950':'#f85149';
+  var pctColor=pct>=55?'#3fb950':pct>=45?'#e3b341':'#f85149';
+  var pctBg=pct>=55?'#238636':pct>=45?'#9e6a03':'#da3633';
+  pg.innerHTML=
+    '<div class="card"><div class="card-h"><h2>📊 Mi Rendimiento</h2></div><div class="card-b">'
+    +'<div class="srow"><span class="sl2">% Acierto</span><span class="sv2" style="color:'+pctColor+'">'+pct+'%</span></div>'
+    +'<div class="bbar"><div class="bfill" style="width:'+Math.min(pct,100)+'%;background:'+pctBg+'"></div></div>'
+    +'<div class="srow"><span class="sl2">✅ Ganados</span><span class="sv2" style="color:#3fb950">'+wins+'</span></div>'
+    +'<div class="srow"><span class="sl2">❌ Perdidos</span><span class="sv2" style="color:#f85149">'+losses+'</span></div>'
+    +'<div class="srow"><span class="sl2">⏳ Pendientes</span><span class="sv2">'+pending+'</span></div>'
+    +'<div class="srow"><span class="sl2">Total</span><span class="sv2">'+picks.length+' picks</span></div>'
+    +'</div></div>'
+    +'<div class="card"><div class="card-h"><h2>💰 Bankroll</h2></div><div class="card-b">'
+    +'<div class="srow"><span class="sl2">Capital inicial</span><span class="sv2">$'+bk.s.toFixed(0)+'</span></div>'
+    +'<div class="srow"><span class="sl2">Capital actual</span><span class="sv2">$'+bk.c.toFixed(0)+'</span></div>'
+    +'<div class="srow"><span class="sl2">Ganancia/Pérdida</span><span class="sv2" style="color:'+pColor+'">'+(profit>=0?'+':'')+'$'+profit.toFixed(0)+'</span></div>'
+    +'<div class="g2">'
+    +'<div><div class="lbl">Capital inicial ($)</div><input class="inp" id="bkS" type="number" value="'+bk.s+'"></div>'
+    +'<div><div class="lbl">Capital actual ($)</div><input class="inp" id="bkC" type="number" value="'+bk.c+'"></div>'
+    +'</div>'
+    +'<button class="btn btn-g" onclick="saveBankroll()">💾 Actualizar Bankroll</button>'
+    +'</div></div>'
+    +'<div class="card"><div class="card-h" style="display:flex;justify-content:space-between;align-items:center">'
+    +'<h2>📋 Historial</h2>'
+    +(picks.length>0?'<button onclick="clearPicks()" style="background:none;border:none;color:#f85149;font-size:11px;cursor:pointer">🗑 Limpiar</button>':'')
+    +'</div><div class="card-b" style="gap:0">'
+    +(picks.length===0?'<div style="text-align:center;color:#8b949e;font-size:13px;padding:16px">Sin picks guardados aún.</div>'
+      :picks.map(function(p){
+        var ic=p.result==='W'?'✅':p.result==='L'?'❌':'⏳';
+        var hc=p.result==='W'?'hw':p.result==='L'?'hl':'hp';
+        return '<div class="hi2"><div class="hico '+hc+'">'+ic+'</div>'
+          +'<div class="hinf"><div class="hmt">'+(p.match||'')+'</div><div class="hpk">'+(p.pick||'')+'</div><div class="hdt">'+(p.date||'')+'</div></div>'
+          +'<div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">'
+          +'<span style="font-size:12px;font-weight:700;color:'+(p.conf>=85?'#3fb950':p.conf>=75?'#e3b341':'#8b949e')+'">'+p.conf+'%</span>'
+          +'<div style="display:flex;gap:3px">'
+          +'<button onclick="markResult(\''+p.id+'\',\'W\');pgTRK(document.getElementById(\'pg\'))" style="padding:2px 7px;background:rgba(35,134,54,.2);border:1px solid #238636;border-radius:4px;color:#3fb950;font-size:10px;cursor:pointer">W</button>'
+          +'<button onclick="markResult(\''+p.id+'\',\'L\');pgTRK(document.getElementById(\'pg\'))" style="padding:2px 7px;background:rgba(248,81,73,.2);border:1px solid #f85149;border-radius:4px;color:#f85149;font-size:10px;cursor:pointer">L</button>'
+          +'</div></div></div>';
+      }).join(''))
+    +'</div></div>';
+}
+function saveBankroll(){var s=parseFloat(V('bkS'))||100;var c=parseFloat(V('bkC'))||100;saveBK2(s,c);alert('✅ Bankroll actualizado');pgTRK(G('pg'));}
+
+// ── CONFIG ────────────────────────────────────────────────────────────────────
+function pgCFG(pg){
+  var cur=GK();var mk=cur?cur.slice(0,14)+'...'+cur.slice(-6):'No configurada';
+  var curOdds=getOddsKey();var mk2=curOdds?curOdds.slice(0,8)+'...':'No configurada';
+  pg.innerHTML=
+    '<div class="card"><div class="card-h"><h2>🔑 Groq API Key</h2><p>Para análisis con IA</p></div><div class="card-b">'
+    +'<div style="font-size:11px;color:#8b949e">Key activa: <span style="font-family:monospace;color:#e6edf3">'+mk+'</span></div>'
+    +'<div class="cfg-info">1. Ve a <b style="color:#3fb950">console.groq.com</b><br>2. Sign up gratis con Gmail<br>3. API Keys → Create API Key<br>4. Copia la key <b>gsk_...</b><br>5. Pégala abajo</div>'
+    +'<div><div class="lbl">Tu Groq Key (gsk_...)</div><input class="inp" id="cfgK" placeholder="gsk_..." type="text" autocomplete="off" spellcheck="false" style="font-family:monospace;font-size:13px"></div>'
+    +'<button class="btn btn-g" onclick="saveKey()">💾 Guardar Groq Key</button>'
+    +'<div id="kmsg"></div>'
+    +'</div></div>'
+
+    +'<div class="card" style="margin-top:12px"><div class="card-h"><h2>📊 The Odds API Key</h2><p>Para cuotas reales y EV — gratis</p></div><div class="card-b">'
+    +'<div style="font-size:11px;color:#8b949e">Key activa: <span style="font-family:monospace;color:#e6edf3">'+mk2+'</span></div>'
+    +'<div class="cfg-info">1. Ve a <b style="color:#3fb950">the-odds-api.com</b><br>2. Sign up gratis<br>3. Copia tu API key<br>4. Pégala abajo<br><b style="color:#e3b341">500 requests/mes gratis</b></div>'
+    +'<div><div class="lbl">Tu Odds API Key</div><input class="inp" id="oddsK" placeholder="tu-key-aqui..." type="text" autocomplete="off" spellcheck="false" style="font-family:monospace;font-size:13px"></div>'
+    +'<button class="btn btn-g" onclick="saveOddsKeyBtn()">💾 Guardar Odds Key</button>'
+    +'<div id="oddsmsg"></div>'
+    +'</div></div>'
+
+    +'<div class="card" style="margin-top:12px"><div class="card-h"><h2>🔍 Verificar Conexión</h2></div><div class="card-b">'
+    +'<div id="kst" style="font-size:12px;color:#8b949e">Toca para verificar...</div>'
+    +'<button class="btn btn-d" onclick="testKey()">Verificar Groq</button>'
+    +'</div></div>'
+
+    +'<div class="card" style="margin-top:12px"><div class="card-h"><h2>📊 Fuentes de Datos</h2></div><div class="card-b">'
+    +'<div class="cfg-info">'
+    +'<b style="color:#3fb950">🏀 NBA:</b> thestatsdontlie.com/nba · basketball-reference<br><br>'
+    +'<b style="color:#a371f7">🎾 Tennis:</b> atptour.com · TennisAbstract<br><br>'
+    +'<b style="color:#3fb950">⚽ Fútbol:</b> thestatsdontlie.com · SofaScore · FBref<br><br>'
+    +'<b style="color:#f85149">⚾ MLB:</b> baseball-reference · FanGraphs<br><br>'
+    +'<b style="color:#e3b341">⚠️</b> Verifica siempre antes de apostar.'
+    +'</div></div></div>';
+}
+function saveKey(){
+  var v=V('cfgK');var msg=G('kmsg');
+  if(!v){if(msg)msg.innerHTML='<div style="color:#ffa198;font-size:12px;margin-top:4px">Escribe una key primero</div>';return;}
+  if(v.indexOf('gsk_')!==0){if(msg)msg.innerHTML='<div style="color:#ffa198;font-size:12px;margin-top:4px">La key debe empezar con gsk_</div>';return;}
+  try{localStorage.setItem('gk',v);}catch(e){}
+  G('cfgK').value='';ubdg();
+  if(msg)msg.innerHTML='<div style="color:#3fb950;font-size:12px;margin-top:4px">✅ Key guardada correctamente</div>';
+  setTimeout(function(){pgCFG(G('pg'));},1500);
+}
+async function testKey(){
+  var el=G('kst');if(el)el.textContent='Verificando...';
+  try{
+    var r=await fetch(GURL,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+GK()},body:JSON.stringify({model:'llama-3.3-70b-versatile',max_tokens:5,messages:[{role:'user',content:'hi'}]})});
+    var d=await r.json();
+    if(el)el.innerHTML=r.ok?'<span style="color:#3fb950">✅ Key válida — Groq conectado OK</span>':'<span style="color:#ffa198">❌ '+((d.error&&d.error.message)||'error')+'</span>';
+  }catch(e){if(el)el.innerHTML='<span style="color:#ffa198">❌ Sin conexión: '+e.message+'</span>';}
+}
+
+
+// ── ODDS & EV & WEATHER ─────────────────────────────────────────────────────
+var ODDS_KEY = '';
+function getOddsKey(){ try{ return localStorage.getItem('oddskey')||''; }catch(e){ return ''; } }
+function saveOddsKey(k){ try{ localStorage.setItem('oddskey',k); }catch(e){} }
+
+// Fetch real odds from The Odds API
+async function fetchOdds(sport, team1, team2){
+  var key = getOddsKey();
+  if(!key) return null;
+  var sportMap = {
+    football: 'soccer_epl',
+    basketball: 'basketball_nba', 
+    baseball: 'baseball_mlb',
+    tennis: null
+  };
+  var sp = sportMap[sport];
+  if(!sp) return null;
+  try {
+    var url = 'https://api.the-odds-api.com/v4/sports/'+sp+'/odds/?apiKey='+key+'&regions=eu&markets=h2h,totals&oddsFormat=decimal';
+    var ctrl = new AbortController(); setTimeout(function(){ ctrl.abort(); }, 6000);
+    var r = await fetch(url, {signal: ctrl.signal});
+    if(!r.ok) return null;
+    var data = await r.json();
+    // Find matching game
+    var t1 = (team1||'').toLowerCase();
+    var t2 = (team2||'').toLowerCase();
+    var match = data.find(function(g){
+      var ht = (g.home_team||'').toLowerCase();
+      var at = (g.away_team||'').toLowerCase();
+      return (ht.includes(t1.split(' ')[0]) || t1.includes(ht.split(' ')[0])) ||
+             (at.includes(t2.split(' ')[0]) || t2.includes(at.split(' ')[0]));
+    });
+    if(!match) return null;
+    // Extract best odds
+    var result = { home: null, away: null, draw: null, over: null, under: null, bookmaker: '' };
+    if(match.bookmakers && match.bookmakers.length) {
+      var bk = match.bookmakers[0];
+      result.bookmaker = bk.title || '';
+      (bk.markets||[]).forEach(function(mkt){
+        if(mkt.key === 'h2h') {
+          (mkt.outcomes||[]).forEach(function(o){
+            if(o.name === match.home_team) result.home = o.price;
+            else if(o.name === match.away_team) result.away = o.price;
+            else result.draw = o.price;
+          });
+        }
+        if(mkt.key === 'totals') {
+          (mkt.outcomes||[]).forEach(function(o){
+            if(o.name === 'Over') result.over = o.price;
+            else result.under = o.price;
+          });
+        }
+      });
+    }
+    return result;
+  } catch(e){ return null; }
+}
+
+// Calculate EV (Expected Value)
+// EV = (probability * odds) - 1
+// Positive EV = value bet
+function calcEV(confPct, odds){
+  if(!odds || !confPct) return null;
+  var prob = confPct / 100;
+  var ev = (prob * odds) - 1;
+  return Math.round(ev * 100) / 100;
+}
+
+function evColor(ev){
+  if(ev === null) return '#8b949e';
+  if(ev > 0.1) return '#3fb950';
+  if(ev > 0) return '#56d364';
+  if(ev > -0.1) return '#e3b341';
+  return '#f85149';
+}
+
+function evLabel(ev){
+  if(ev === null) return '–';
+  if(ev > 0.1) return '✅ Valor alto';
+  if(ev > 0) return '✅ Valor positivo';
+  if(ev > -0.1) return '⚠️ Neutro';
+  return '❌ Sin valor';
+}
+
+function renderOddsEV(odds, picks, home, away){
+  if(!odds) return '<div style="background:#21262d;border-radius:8px;padding:10px 12px;font-size:11px;color:#8b949e">📊 Sin cuotas — Agrega tu Odds API key en Config para ver valor esperado real.</div>';
+  
+  var rows = '';
+  
+  // Home win
+  if(odds.home) {
+    var pick = picks.ganador;
+    var conf = pick && (pick.pick||'').toLowerCase().includes(home.toLowerCase().split(' ')[0].toLowerCase()) ? pick.conf : null;
+    var ev = calcEV(conf, odds.home);
+    rows += oddsRow(home+' gana', odds.home, conf, ev, odds.bookmaker);
+  }
+  // Away win  
+  if(odds.away) {
+    var pick2 = picks.ganador;
+    var conf2 = pick2 && (pick2.pick||'').toLowerCase().includes(away.toLowerCase().split(' ')[0].toLowerCase()) ? pick2.conf : null;
+    var ev2 = calcEV(conf2, odds.away);
+    rows += oddsRow(away+' gana', odds.away, conf2, ev2, odds.bookmaker);
+  }
+  // Draw
+  if(odds.draw) {
+    rows += oddsRow('Empate', odds.draw, null, null, odds.bookmaker);
+  }
+  // Over
+  if(odds.over && picks.total) {
+    var evO = calcEV(picks.total.conf, odds.over);
+    rows += oddsRow('Over', odds.over, picks.total.conf, evO, odds.bookmaker);
+  }
+
+  return '<div style="background:#161b22;border:1px solid #30363d;border-radius:10px;overflow:hidden">'
+    +'<div style="background:#21262d;padding:8px 12px;border-bottom:1px solid #30363d;display:flex;justify-content:space-between;align-items:center">'
+    +'<span style="font-size:11px;font-weight:700;color:#e6edf3">📊 Cuotas Reales + EV</span>'
+    +'<span style="font-size:10px;color:#8b949e">'+odds.bookmaker+'</span>'
+    +'</div>'+rows+'</div>';
+}
+
+function oddsRow(label, odds, conf, ev, bk){
+  var ec = evColor(ev);
+  var el2 = evLabel(ev);
+  return '<div style="display:flex;align-items:center;padding:9px 12px;border-bottom:1px solid #21262d;gap:8px">'
+    +'<span style="flex:1;font-size:12px;color:#e6edf3">'+label+'</span>'
+    +'<span style="font-size:13px;font-weight:700;color:#e3b341">'+odds+'x</span>'
+    +(conf?'<span style="font-size:11px;color:#8b949e">'+conf+'%</span>':'')
+    +(ev!==null?'<span style="font-size:11px;font-weight:700;color:'+ec+'">'+(ev>0?'+':'')+ev+' '+el2+'</span>':'')
+    +'</div>';
+}
+
+// Fetch weather for stadium/city
+async function fetchWeather(city){
+  try {
+    // Using open-meteo (free, no key needed)
+    // First geocode the city
+    var geoR = await fetch('https://geocoding-api.open-meteo.com/v1/search?name='+encodeURIComponent(city)+'&count=1&language=es');
+    if(!geoR.ok) return null;
+    var geoD = await geoR.json();
+    if(!geoD.results || !geoD.results.length) return null;
+    var loc = geoD.results[0];
+    // Get weather
+    var wR = await fetch('https://api.open-meteo.com/v1/forecast?latitude='+loc.latitude+'&longitude='+loc.longitude+'&current=temperature_2m,precipitation,wind_speed_10m,weather_code&timezone=auto');
+    if(!wR.ok) return null;
+    var wD = await wR.json();
+    var curr = wD.current;
+    var code = curr.weather_code;
+    var desc = weatherDesc(code);
+    var impact = weatherImpact(code, curr.wind_speed_10m, curr.precipitation);
+    return {
+      temp: Math.round(curr.temperature_2m),
+      precip: curr.precipitation,
+      wind: Math.round(curr.wind_speed_10m),
+      desc: desc,
+      impact: impact,
+      city: loc.name
+    };
+  } catch(e){ return null; }
+}
+
+function weatherDesc(code){
+  if(code === 0) return '☀️ Despejado';
+  if(code <= 3) return '⛅ Parcialmente nublado';
+  if(code <= 49) return '🌫️ Niebla';
+  if(code <= 59) return '🌦️ Llovizna';
+  if(code <= 69) return '🌧️ Lluvia';
+  if(code <= 79) return '🌨️ Nieve';
+  if(code <= 82) return '🌧️ Lluvia intensa';
+  if(code <= 99) return '⛈️ Tormenta';
+  return '🌤️ Variable';
+}
+
+function weatherImpact(code, wind, precip){
+  var impacts = [];
+  if(code >= 60 || precip > 1) impacts.push('🌧️ Lluvia → menos goles, menos corners');
+  if(wind > 30) impacts.push('💨 Viento fuerte → afecta centros y tiros lejanos');
+  if(code >= 80) impacts.push('⛈️ Lluvia intensa → campo pesado, juego directo');
+  if(code === 0 && wind < 15) impacts.push('☀️ Condiciones perfectas → juego fluido');
+  return impacts.length ? impacts : ['⚽ Sin impacto significativo en el juego'];
+}
+
+function renderWeather(w){
+  if(!w) return '';
+  var impactColor = w.impact[0].includes('Lluvia') || w.impact[0].includes('Tormenta') ? '#e3b341' : '#3fb950';
+  return '<div style="background:#161b22;border:1px solid #30363d;border-radius:10px;overflow:hidden">'
+    +'<div style="background:#21262d;padding:8px 12px;border-bottom:1px solid #30363d">'
+    +'<span style="font-size:11px;font-weight:700;color:#e6edf3">🌤️ Clima en '+w.city+'</span>'
+    +'</div>'
+    +'<div style="padding:10px 12px">'
+    +'<div style="display:flex;gap:16px;margin-bottom:8px">'
+    +'<div style="text-align:center"><div style="font-size:20px">'+w.desc.split(' ')[0]+'</div><div style="font-size:11px;color:#8b949e">'+w.desc.split(' ').slice(1).join(' ')+'</div></div>'
+    +'<div style="flex:1">'
+    +'<div style="display:flex;gap:12px;font-size:12px;color:#8b949e;margin-bottom:4px">'
+    +'<span>🌡️ '+w.temp+'°C</span>'
+    +'<span>💧 '+w.precip+'mm</span>'
+    +'<span>💨 '+w.wind+'km/h</span>'
+    +'</div>'
+    +w.impact.map(function(i){ return '<div style="font-size:11px;color:'+impactColor+';margin-top:3px">'+i+'</div>'; }).join('')
+    +'</div></div></div></div>';
+}
+
+// Enhanced renderFUT with odds + weather
+var _origRenderFUT = renderFUT;
+function renderFUT(d, h, a, lg){
+  _origRenderFUT(d, h, a, lg);
+  // Now fetch odds and weather in background and inject
+  var city = getCityFromTeam(h, lg.n);
+  Promise.all([
+    fetchOdds('football', h, a),
+    city ? fetchWeather(city) : Promise.resolve(null)
+  ]).then(function(results){
+    var odds = results[0];
+    var weather = results[1];
+    var fRes = G('fRes');
+    if(!fRes) return;
+    // Find the card-b div and inject before last g2 button
+    var oddsHtml = renderOddsEV(odds, d, h, a);
+    var weatherHtml = renderWeather(weather);
+    // Create injection div
+    var div = document.createElement('div');
+    div.style.cssText = 'display:flex;flex-direction:column;gap:10px;margin-top:10px;padding:0 14px 14px';
+    div.innerHTML = weatherHtml + oddsHtml;
+    // Find the card inside fRes and append
+    var card = fRes.querySelector('.card');
+    if(card){
+      var cardB = card.querySelector('.card-b');
+      if(cardB) cardB.appendChild(div);
+    }
+  });
+}
+
+// Enhanced renderNBA with odds
+var _origRenderNBA = renderNBA;
+function renderNBA(d, h, a){
+  _origRenderNBA(d, h, a);
+  fetchOdds('basketball', h, a).then(function(odds){
+    var nRes = G('nRes');
+    if(!nRes || !odds) return;
+    var oddsHtml = renderOddsEV(odds, d, h, a);
+    var div = document.createElement('div');
+    div.style.cssText = 'padding:0 14px 14px';
+    div.innerHTML = oddsHtml;
+    var card = nRes.querySelector('.card');
+    if(card){ var cardB = card.querySelector('.card-b'); if(cardB) cardB.appendChild(div); }
+  });
+}
+
+// Enhanced renderMLB with odds
+var _origRenderMLB = renderMLB;
+function renderMLB(d, h, a, pit){
+  _origRenderMLB(d, h, a, pit);
+  fetchOdds('baseball', h, a).then(function(odds){
+    var mRes = G('mRes');
+    if(!mRes || !odds) return;
+    var oddsHtml = renderOddsEV(odds, d, h, a);
+    var div = document.createElement('div');
+    div.style.cssText = 'padding:0 14px 14px';
+    div.innerHTML = oddsHtml;
+    var card = mRes.querySelector('.card');
+    if(card){ var cardB = card.querySelector('.card-b'); if(cardB) cardB.appendChild(div); }
+  });
+}
+
+function getCityFromTeam(team, league){
+  var cities = {
+    'Arsenal': 'London', 'Chelsea': 'London', 'Tottenham': 'London',
+    'Manchester City': 'Manchester', 'Manchester United': 'Manchester',
+    'Liverpool': 'Liverpool', 'Everton': 'Liverpool',
+    'Real Madrid': 'Madrid', 'Barcelona': 'Barcelona', 'Atletico': 'Madrid',
+    'Bayern': 'Munich', 'Dortmund': 'Dortmund',
+    'PSG': 'Paris', 'Juventus': 'Turin', 'Milan': 'Milan', 'Inter': 'Milan',
+    'Lakers': 'Los Angeles', 'Clippers': 'Los Angeles',
+    'Knicks': 'New York', 'Nets': 'New York',
+    'Bulls': 'Chicago', 'Heat': 'Miami', 'Celtics': 'Boston'
+  };
+  for(var k in cities){
+    if(team.toLowerCase().includes(k.toLowerCase())) return cities[k];
+  }
+  return null;
+}
+
+// Odds key section integrated into pgCFG below
+
+function saveOddsKeyBtn(){
+  var v = V('oddsK');
+  var msg = G('oddsmsg');
+  if(!v){ if(msg) msg.innerHTML='<div style="color:#ffa198;font-size:12px;margin-top:4px">Escribe una key primero</div>'; return; }
+  saveOddsKey(v);
+  G('oddsK').value = '';
+  if(msg) msg.innerHTML='<div style="color:#3fb950;font-size:12px;margin-top:4px">✅ Odds Key guardada</div>';
+  setTimeout(function(){ pgCFG(G('pg')); }, 1500);
+}
+
+</script>
+</body>
+</html>
